@@ -42,7 +42,7 @@ function Title(props) {
           <Icon
             type="plus-circle"
             style={{ cursor: "pointer" }}
-            onClick={function (...args) {
+            onClick={function(...args) {
               const addCallback = add(configIndex);
               typeof onAddClick === "function" &&
                 onAddClick.apply(this, [
@@ -63,7 +63,7 @@ function Title(props) {
           <Icon
             type="minus-circle-o"
             style={{ cursor: "pointer" }}
-            onClick={function (...args) {
+            onClick={function(...args) {
               const minusCallback = minus(configIndex);
               typeof onMinusClick === "function" &&
                 onMinusClick.apply(this, [

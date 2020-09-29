@@ -1,11 +1,25 @@
 import React from "react";
+// import { createProto } from "./array";
+const arrayProto = Array.prototype;
+const methodsToPatch = [
+  "push",
+  "pop",
+  "shift",
+  "unshift",
+  "splice",
+  "sort",
+  "reverse",
+];
 
-class CreateConfig {
+export class CreateConfig {
   constructor(config) {
     this.config = config;
     this.register = [];
     // this.keying(config);
-    this.proxyConfig = this.initConfig(config);
+    if (config) {
+      this.createProto = this.overwriteArrayMethod();
+      this.proxyConfig = this.initConfig(config);
+    }
   }
 
   setRegister = (register) => {
@@ -30,15 +44,51 @@ class CreateConfig {
   //     });
   //   }
   // };
+  overwriteArrayMethod = () => {
+    const createProto = Object.create(arrayProto);
+    methodsToPatch.forEach((method) => {
+      this.createMark(createProto, method, function(...args) {
+        console.log("sub");
+        const { configIndex, ownIndex, $cfg } = this.__m__;
+        let insertData = [];
+        switch (method) {
+          case "push":
+          case "unshift":
+            insertData = args.splice(0);
+            break;
+          case "splice":
+            insertData = args.splice(2);
+            break;
+        }
+        const _args = insertData.map((item) => {
+          return typeof item === "object"
+            ? this.pxying(configIndex, ownIndex)(item)
+            : item;
+        });
+        return arrayProto[method].apply(this, [...args, ..._args]);
+      });
+    });
+    return createProto;
+  };
+
+  createMark = (originObjorArr, key = "__m__", values = {}) => {
+    Object.defineProperty(originObjorArr, key, {
+      value: values,
+      enumerable: false,
+    });
+  };
 
   overwriteMethods = (originOnFunction, configIndex, ownIndex) => {
-    return function (...args) {
+    return function(...args) {
       return originOnFunction.apply(this, [...args, configIndex, ownIndex]);
     };
   };
 
   pxying = (configIndex, ownIndex) => {
     const innerPxying = (config) => {
+      if (Array.isArray(config))
+        Object.setPrototypeOf(config, this.createProto);
+      this.createMark(config, "__m__", { configIndex, ownIndex, $cfg: "cid" });
       for (const cfg in config) {
         const every = config[cfg];
         config[cfg] =
@@ -48,7 +98,7 @@ class CreateConfig {
             ? this.overwriteMethods(every, configIndex, ownIndex)
             : every;
       }
-      return new Proxy(config, {
+      const proxyConfig = new Proxy(config, {
         get: (target, prop) => {
           return Reflect.get(target, prop);
         },
@@ -60,6 +110,8 @@ class CreateConfig {
           return true;
         },
       });
+
+      return proxyConfig;
     };
     return innerPxying;
   };
@@ -69,6 +121,8 @@ class CreateConfig {
       const ownIndex = item.divideIndex ? configIndex - item.divideIndex : null;
       return this.pxying(configIndex, ownIndex)(item);
     });
+    this.createMark(initedConfig, "__m__", { $cfg: "root" });
+    Object.setPrototypeOf(initedConfig, this.createProto);
     return new Proxy(initedConfig, {
       get: (target, prop) => {
         return Reflect.get(target, prop);

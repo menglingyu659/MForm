@@ -10,3 +10,5 @@ export function overwriteMethods(originElement, configIndex, ownIndex) {
   }
   return originElement;
 }
+
+export function overwriteArrayMethod() {}
