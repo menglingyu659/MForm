@@ -1,5 +1,6 @@
 import React from "react";
 import { Input, Select } from "antd";
+import { overwriteMethods } from "./utils";
 
 const { Option, OptGroup } = Select;
 
@@ -12,11 +13,13 @@ function createFormItemContent(props) {
       options,
       children,
       group,
+      methods,
       ...elementProps
     } = {},
   } = props;
+  const newMethods = overwriteMethods(methods, configIndex, ownIndex);
   return (
-    <Com {...elementProps}>
+    <Com {...elementProps} {...newMethods}>
       {Com.name === "Select" && options ? (
         group ? (
           <OptGroup label={group}>

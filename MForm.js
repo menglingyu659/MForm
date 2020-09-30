@@ -2,6 +2,7 @@ import React, { useState, useLayoutEffect, useImperativeHandle } from "react";
 import { Col, Form, Row } from "antd";
 import { createFormItemContent } from "./createFormItemContent";
 import { useFormConfig } from "./useFormConfig";
+import { overwriteMethods } from "./utils";
 import Title from "./Title";
 
 const FormItem = Form.Item;

@@ -1,14 +1,15 @@
-export function overwriteMethods(originElement, configIndex, ownIndex) {
-  const reg = /^on.*/;
-  for (const prop in originElement) {
-    const item = originElement[prop];
+export function overwriteMethods(methods, configIndex, ownIndex) {
+  const newMethods = { ...methods };
+  const reg = /^(on|handle).*/;
+  for (const prop in newMethods) {
+    const item = newMethods[prop];
     if (typeof item === "function" && reg.test(item.name)) {
-      originElement[prop] = function(...args) {
-        item.apply(this, args.concat(configIndex, ownIndex));
+      newMethods[prop] = function(...args) {
+        return item.apply(this, args.concat(configIndex, ownIndex));
       };
     }
   }
-  return originElement;
+  return newMethods;
 }
 
 function IEProxy(config, callback) {

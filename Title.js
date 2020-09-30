@@ -1,5 +1,6 @@
 import React from "react";
 import { Typography, Icon } from "antd";
+import { overwriteMethods } from "./utils";
 
 const { Text } = Typography;
 
@@ -16,9 +17,11 @@ function Title(props) {
       render,
       onAddClick,
       onMinusClick,
+      methods,
       ...titleProps
     } = {},
   } = props;
+  const newMethods = overwriteMethods(methods, configIndex, ownIndex);
   return (
     <span className="m-title">
       {title ? (
@@ -26,7 +29,7 @@ function Title(props) {
           typeof render === "function" ? (
             render(configIndex)
           ) : (
-            <Text strong {...titleProps}>
+            <Text strong {...titleProps} {...newMethods}>
               {content}
             </Text>
           )
