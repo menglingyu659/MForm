@@ -11,8 +11,6 @@ export function overwriteMethods(originElement, configIndex, ownIndex) {
   return originElement;
 }
 
-export function overwriteArrayMethod() {}
-
 function IEProxy(config, callback) {
   for (const cfg in config) {
     let value = config[cfg];
@@ -44,10 +42,11 @@ function webkit(config, callback) {
 
 export function polyfillProxy(config, callback) {
   let initedConfig;
-  // if (window.Proxy) {
-  //   initedConfig = webkit(config, callback);
-  // } else {
-  initedConfig = IEProxy(config, callback);
-  // }
+  if (window.Proxy) {
+    initedConfig = webkit(config, callback);
+  } else {
+    // 兼容IE
+    initedConfig = IEProxy(config, callback);
+  }
   return initedConfig;
 }
