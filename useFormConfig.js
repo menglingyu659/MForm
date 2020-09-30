@@ -1,6 +1,8 @@
 import React from "react";
-// import { createProto } from "./array";
+import { polyfillProxy } from "./utils";
+
 const arrayProto = Array.prototype;
+const objectProto = Object.prototype;
 const methodsToPatch = [
   "push",
   "pop",
@@ -17,10 +19,17 @@ export class CreateConfig {
     this.register = [];
     // this.keying(config);
     if (config) {
-      this.createProto = this.overwriteArrayMethod();
+      this.createObjectProto = this.overwriteObjectMethod();
+      this.createArrayProto = this.overwriteArrayMethod();
       this.proxyConfig = this.initConfig(config);
     }
   }
+
+  forceUpdate = () => {
+    this.register.forEach((item) => {
+      typeof item === "function" && item();
+    });
+  };
 
   setRegister = (register) => {
     this.register.push(register);
@@ -44,11 +53,45 @@ export class CreateConfig {
   //     });
   //   }
   // };
+  overwriteArrayMethodPolyfill = (insertData, __m__) => {
+    const { configIndex, ownIndex, $cfg } = __m__;
+    let _args = insertData;
+    // if (window.Proxy) {
+    //   //非IE
+    //   _args = insertData.map((item) => {
+    //     return this.pxying(configIndex, ownIndex)(item);
+    //   });
+    // } else {
+    //IE
+    // const ret = arrayProto[method].apply(this, [...args, ..._args]);
+    // this.initConfig(this.proxyConfig);
+    // this.forceUpdate();
+    // }
+    _args = arrayProto[method].apply(this, [...args, ...insertData]);
+    this.initConfig(this.proxyConfig);
+    this.forceUpdate();
+    return _args;
+  };
+
+  overwriteObjectMethod = () => {
+    return Object.create(objectProto, {
+      $set: {
+        value: this.$set,
+        enumerable: false,
+      },
+    });
+  };
+
   overwriteArrayMethod = () => {
-    const createProto = Object.create(arrayProto);
+    const createArrayProto = Object.create(arrayProto, {
+      $set: {
+        value: this.$set,
+        enumerable: false,
+      },
+    });
     methodsToPatch.forEach((method) => {
-      this.createMark(createProto, method, function(...args) {
-        console.log("sub");
+      const that = this;
+      this.createMark(createArrayProto, method, function(...args) {
         const { configIndex, ownIndex, $cfg } = this.__m__;
         let insertData = [];
         switch (method) {
@@ -61,14 +104,23 @@ export class CreateConfig {
             break;
         }
         const _args = insertData.map((item) => {
-          return typeof item === "object"
-            ? this.pxying(configIndex, ownIndex)(item)
-            : item;
+          return that.pxying(configIndex, ownIndex)(item);
         });
-        return arrayProto[method].apply(this, [...args, ..._args]);
+        const methodReturn = arrayProto[method].apply(this, [
+          ...args,
+          ..._args,
+        ]);
+        if (!window.Proxy) {
+          // 兼容IE
+          polyfillProxy(this, () => {
+            that.forceUpdate();
+          });
+          that.forceUpdate();
+        }
+        return methodReturn;
       });
     });
-    return createProto;
+    return createArrayProto;
   };
 
   createMark = (originObjorArr, key = "__m__", values = {}) => {
@@ -86,31 +138,28 @@ export class CreateConfig {
 
   pxying = (configIndex, ownIndex) => {
     const innerPxying = (config) => {
-      if (Array.isArray(config))
-        Object.setPrototypeOf(config, this.createProto);
-      this.createMark(config, "__m__", { configIndex, ownIndex, $cfg: "cid" });
+      if (typeof config !== "object") return config;
+      if (typeof config === "function" && /^(on|handle).*/.test(config.name))
+        return this.overwriteMethods(config, configIndex, ownIndex);
+      const proxyConfig = polyfillProxy(config, () => {
+        this.forceUpdate();
+      });
+      if (!config.__m__) {
+        if (Array.isArray(config))
+          Object.setPrototypeOf(config, this.createArrayProto);
+        if (Object.prototype.toString.call(config) === "[object Object]") {
+          Object.setPrototypeOf(config, this.createObjectProto);
+        }
+        this.createMark(config, "__m__", {
+          configIndex,
+          ownIndex,
+          $cfg: "cid",
+        });
+      }
       for (const cfg in config) {
         const every = config[cfg];
-        config[cfg] =
-          typeof every === "object"
-            ? innerPxying(every)
-            : typeof every === "function" && /^on.*/.test(every.name)
-            ? this.overwriteMethods(every, configIndex, ownIndex)
-            : every;
+        config[cfg] = innerPxying(every);
       }
-      const proxyConfig = new Proxy(config, {
-        get: (target, prop) => {
-          return Reflect.get(target, prop);
-        },
-        set: (target, prop, value) => {
-          Reflect.set(target, prop, value);
-          this.register.forEach((item) => {
-            typeof item === "function" && item();
-          });
-          return true;
-        },
-      });
-
       return proxyConfig;
     };
     return innerPxying;
@@ -121,20 +170,14 @@ export class CreateConfig {
       const ownIndex = item.divideIndex ? configIndex - item.divideIndex : null;
       return this.pxying(configIndex, ownIndex)(item);
     });
-    this.createMark(initedConfig, "__m__", { $cfg: "root" });
-    Object.setPrototypeOf(initedConfig, this.createProto);
-    return new Proxy(initedConfig, {
-      get: (target, prop) => {
-        return Reflect.get(target, prop);
-      },
-      set: (target, prop, value) => {
-        Reflect.set(target, prop, value);
-        this.register.forEach((item) => {
-          typeof item === "function" && item();
-        });
-        return true;
-      },
+    const proxyConfig = polyfillProxy(initedConfig, () => {
+      this.forceUpdate();
     });
+    if (!config.__m__) {
+      this.createMark(initedConfig, "__m__", { $cfg: "root" });
+      Object.setPrototypeOf(initedConfig, this.createArrayProto);
+    }
+    return proxyConfig;
   };
 
   add = (index) => (component) => {
@@ -153,22 +196,18 @@ export class CreateConfig {
     };
   };
 
+  $set = ((that) => {
+    return function(prop, value) {
+      const { configIndex, ownIndex, $cfg } = this.__m__;
+      value = that.pxying(configIndex, ownIndex)(value);
+      that.proxyConfig[prop] = value;
+    };
+  })(this);
+
   getConfig = () => {
     return [this.proxyConfig, { getInnerHooks: this.getInnerHooks }];
   };
 }
-
-// function useFormConfig(config, inited) {
-//   const configRef = React.useRef();
-//   if (!configRef.current) {
-//     if (inited) {
-//       configRef.current = [config, inited];
-//     } else {
-//       configRef.current = new CreateConfig(config).getConfig();
-//     }
-//   }
-//   return configRef.current;
-// }
 
 function insertFormObject(inserter = {}, beInsert) {
   for (const prop in inserter) {
