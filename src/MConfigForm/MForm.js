@@ -13,8 +13,8 @@ function _MForm(props, ref) {
   const [, forceUpdata] = useState(null);
   const { getFieldDecorator } = form;
   const [initedConfig, setting] = useFormConfig(config, inited, { form });
-  const { getInnerHooks } = setting;
   useImperativeHandle(ref, () => [initedConfig, setting]);
+  const { getInnerHooks } = setting;
   const innerHooks = getInnerHooks("menglingyu_innerHooks");
   const { setRegister } = innerHooks;
   useLayoutEffect(() => {

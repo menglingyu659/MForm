@@ -21,13 +21,16 @@ function Title(props) {
       ...titleProps
     } = {},
   } = props;
-  const newMethods = overwriteMethods(methods, configIndex, ownIndex);
+  const newMethods =
+    methods && overwriteMethods(methods, configIndex, ownIndex);
+  const addCallback = add(configIndex);
+  const minusCallback = minus(configIndex);
   return (
     <span className="m-title">
       {title ? (
         typeof title === "object" ? (
           typeof render === "function" ? (
-            render(configIndex)
+            render({ configIndex, ownIndex, addCallback, minusCallback })
           ) : (
             <Text strong {...titleProps} {...newMethods}>
               {content}
@@ -45,8 +48,7 @@ function Title(props) {
           <Icon
             type="plus-circle"
             style={{ cursor: "pointer" }}
-            onClick={function(...args) {
-              const addCallback = add(configIndex);
+            onClick={function (...args) {
               typeof onAddClick === "function" &&
                 onAddClick.apply(this, [
                   addCallback,
@@ -66,8 +68,7 @@ function Title(props) {
           <Icon
             type="minus-circle-o"
             style={{ cursor: "pointer" }}
-            onClick={function(...args) {
-              const minusCallback = minus(configIndex);
+            onClick={function (...args) {
               typeof onMinusClick === "function" &&
                 onMinusClick.apply(this, [
                   minusCallback,

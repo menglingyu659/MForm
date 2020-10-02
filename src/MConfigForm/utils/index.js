@@ -1,10 +1,27 @@
+// export function overwriteMethods(methods, configIndex, ownIndex) {
+//   if (!methods) return methods;
+//   const newMethods = { ...methods };
+//   const reg = /^(on|handle).*/;
+//   for (const prop in newMethods) {
+//     const item = newMethods[prop];
+//     console.log(item.name, "item.name");
+
+//     if (typeof item === "function" && reg.test(item.name)) {
+//       newMethods[prop] = function (...args) {
+//         return item.apply(this, args.concat(configIndex, ownIndex));
+//       };
+//     }
+//   }
+//   return newMethods;
+// }
+
 export function overwriteMethods(methods, configIndex, ownIndex) {
+  if (!methods) return methods;
   const newMethods = { ...methods };
-  const reg = /^(on|handle).*/;
   for (const prop in newMethods) {
     const item = newMethods[prop];
-    if (typeof item === "function" && reg.test(item.name)) {
-      newMethods[prop] = function(...args) {
+    if (typeof item === "function") {
+      newMethods[prop] = function (...args) {
         return item.apply(this, args.concat(configIndex, ownIndex));
       };
     }

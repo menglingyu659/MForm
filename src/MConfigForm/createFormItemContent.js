@@ -8,6 +8,7 @@ function createFormItemContent(props) {
   const {
     configIndex,
     ownIndex,
+    element,
     element: {
       type: Com = Input,
       options,
@@ -17,15 +18,20 @@ function createFormItemContent(props) {
       ...elementProps
     } = {},
   } = props;
-  const newMethods = overwriteMethods(methods, configIndex, ownIndex);
-  return (
+  const newMethods =
+    methods && overwriteMethods(methods, configIndex, ownIndex);
+  return typeof element === "function" ? (
+    element({ configIndex, ownIndex })
+  ) : (
     <Com {...elementProps} {...newMethods}>
-      {Com.name === "Select" && options ? (
+      {typeof children === "function" ? (
+        children({ configIndex, ownIndex })
+      ) : options ? (
         group ? (
           <OptGroup label={group}>
-            {options.map(({ id, label, value }, comOptGroupIndex) => {
+            {options.map(({ id, label, value }, comIndex) => {
               return (
-                <Option key={id || comOptGroupIndex} value={value}>
+                <Option key={id || comIndex} value={value}>
                   {label}
                 </Option>
               );
@@ -40,8 +46,6 @@ function createFormItemContent(props) {
             );
           })
         )
-      ) : typeof children === "function" ? (
-        children()
       ) : null}
     </Com>
   );

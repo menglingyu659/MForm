@@ -72,7 +72,7 @@ export class CreateConfig {
     });
     methodsToPatch.forEach((method) => {
       const that = this;
-      this.createMark(createArrayProto, method, function(...args) {
+      this.createMark(createArrayProto, method, function (...args) {
         let insertData = [];
         switch (method) {
           case "push":
@@ -185,6 +185,7 @@ export class CreateConfig {
   getInnerHooks = (type) => {
     if (type !== "menglingyu_innerHooks") return console.error("innerHooks");
     return {
+      config: this.config,
       setRegister: this.setRegister,
       add: this.add,
       minus: this.minus,

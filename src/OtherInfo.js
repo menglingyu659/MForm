@@ -109,20 +109,7 @@ function OtherInfo(props) {
         id: 5,
         label: isMrgRpt,
         name: `${whereInfo}[]isMrgRpt`,
-        element: {
-          options: [
-            {
-              id: 0,
-              label: "是",
-              value: 1,
-            },
-            {
-              id: 1,
-              label: "否",
-              value: 2,
-            },
-          ],
-        },
+        element: {},
       },
     ];
   }
@@ -203,18 +190,6 @@ function OtherInfo(props) {
         id: 6,
         label: isMrgRpt,
         name: `${whereInfo}[]isMrgRpt`,
-        options: [
-          {
-            id: 0,
-            label: "是",
-            value: 1,
-          },
-          {
-            id: 1,
-            label: "否",
-            value: 2,
-          },
-        ],
       },
     ];
   }
@@ -243,9 +218,8 @@ function OtherInfo(props) {
           add(components);
         },
         onMinusClick(miuns) {
-          // console.log(miuns);
-          // count--;
-          // miuns();
+          count--;
+          miuns();
         },
         methods: {
           onClick(element, index) {
@@ -631,11 +605,10 @@ function OtherInfo(props) {
     ],
     []
   );
-  const { getForm } = props;
   const [config, inited] = useFormConfig(initconfig);
+  console.log("1", inited);
   useEffect(() => {
     console.log("inited", inited);
-    initconfig = getForm(inited.form);
   }, []);
   return <MForm {...{ config, inited, ...formLayout }} />;
 }
