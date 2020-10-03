@@ -10,9 +10,6 @@ module.exports = {
     filename: "js/[hash:8][name].js",
     path: path.resolve(__dirname, "dist"),
   },
-  externals: {
-    react: "react", //打包时候排除react
-  },
   module: {
     rules: [
       {
