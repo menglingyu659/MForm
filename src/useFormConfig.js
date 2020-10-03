@@ -54,6 +54,19 @@ export class CreateConfig {
   //   }
   // };
 
+  $set = ((that) => {
+    return function (prop, value) {
+      if (window.Proxy) {
+        this[prop] = value;
+      } else {
+        value = that.pxying(value);
+        this[prop] = value;
+        polyfillProxy(this, that);
+        that.forceUpdate();
+      }
+    };
+  })(this);
+
   overwriteObjectMethod = () => {
     return Object.create(objectProto, {
       $set: {
@@ -90,11 +103,9 @@ export class CreateConfig {
           ...args,
           ..._args,
         ]);
-        if (!window.Proxy) {
+        if (insertData.length && !window.Proxy) {
           // 兼容IE
-          polyfillProxy(this, () => {
-            that.forceUpdate();
-          });
+          polyfillProxy(this, that);
           that.forceUpdate();
         }
         return methodReturn;
@@ -157,9 +168,7 @@ export class CreateConfig {
       const every = config[cfg];
       config[cfg] = this.pxying(every);
     }
-    return polyfillProxy(config, () => {
-      this.forceUpdate();
-    });
+    return polyfillProxy(config, this);
   };
 
   initConfig = (config = []) => {
@@ -170,9 +179,7 @@ export class CreateConfig {
       this.createMark(initedConfig, "__m__", { $cfg: "root" });
       Object.setPrototypeOf(initedConfig, this.createArrayProto);
     }
-    return polyfillProxy(initedConfig, () => {
-      this.forceUpdate();
-    });
+    return polyfillProxy(initedConfig, this);
   };
 
   add = (index) => (component) => {
@@ -185,20 +192,11 @@ export class CreateConfig {
   getInnerHooks = (type) => {
     if (type !== "menglingyu_innerHooks") return console.error("innerHooks");
     return {
-      config: this.config,
       setRegister: this.setRegister,
       add: this.add,
       minus: this.minus,
     };
   };
-
-  // $set = ((that) => {
-  //   return function(prop, value) {
-  //     const { configIndex, ownIndex, $cfg } = this.__m__;
-  //     value = that.pxying(configIndex, ownIndex)(value);
-  //     that.proxyConfig[prop] = value;
-  //   };
-  // })(this);
 
   getConfig = () => {
     return [this.proxyConfig, { getInnerHooks: this.getInnerHooks }];

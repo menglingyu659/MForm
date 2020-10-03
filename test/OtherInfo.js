@@ -457,7 +457,10 @@ function OtherInfo(props) {
             name: "legalPersonName",
             element: {
               type: "span",
-              children() {
+              methods: {
+                onClick(element, index) {},
+              },
+              children(props) {
                 return <em>em</em>;
               },
               className: "spanm",
@@ -467,21 +470,8 @@ function OtherInfo(props) {
             id: 1,
             label: "法定代表人证件号码",
             name: "legalPersonId",
-            // element: {
-            //   type: "span",
-            // },
-            element: (props) => {
-              console.log(props);
-              return (
-                <span
-                  onClick={function () {
-                    console.log(this);
-                    console.log(props);
-                  }}
-                >
-                  span
-                </span>
-              );
+            element: {
+              type: "span",
             },
             required: false,
           },

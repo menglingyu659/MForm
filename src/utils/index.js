@@ -29,7 +29,7 @@ export function overwriteMethods(methods, configIndex, ownIndex) {
   return newMethods;
 }
 
-function IEProxy(config, callback) {
+function IEProxy(config, createConfig) {
   for (const cfg in config) {
     let value = config[cfg];
     Object.defineProperty(config, cfg, {
@@ -37,7 +37,9 @@ function IEProxy(config, callback) {
         return value;
       },
       set(newValue) {
-        callback();
+        if (typeof newValue === "object" && !newValue.hasOwnProperty("__m__"))
+          newValue = createConfig.pxying(newValue);
+        createConfig.forceUpdate();
         value = newValue;
       },
     });
@@ -45,26 +47,29 @@ function IEProxy(config, callback) {
   return config;
 }
 
-function webkit(config, callback) {
+function webkit(config, createConfig) {
   return new Proxy(config, {
     get: (target, prop) => {
       return Reflect.get(target, prop);
     },
     set: (target, prop, value) => {
+      if (typeof value === "object" && !value.hasOwnProperty("__m__"))
+        value = createConfig.pxying(value);
       Reflect.set(target, prop, value);
-      callback();
+      createConfig.forceUpdate();
       return true;
     },
   });
 }
 
-export function polyfillProxy(config, callback) {
+export function polyfillProxy(config, createConfig) {
+  if (typeof config !== "object") return config;
   let initedConfig;
   if (window.Proxy) {
-    initedConfig = webkit(config, callback);
+    initedConfig = webkit(config, createConfig);
   } else {
     // 兼容IE
-    initedConfig = IEProxy(config, callback);
+    initedConfig = IEProxy(config, createConfig);
   }
   return initedConfig;
 }

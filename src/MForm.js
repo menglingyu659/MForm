@@ -55,7 +55,9 @@ function _MForm(props, ref) {
                   //
                   ...antdSetting
                 } = innerProps;
-                return (
+                return typeof innerProps === "function" ? (
+                  innerProps({ configIndex, ownIndex })
+                ) : (
                   <Col key={id || componentIndex} {...(itemCol || col)}>
                     <FormItem label={label} {...antdSetting}>
                       {name
