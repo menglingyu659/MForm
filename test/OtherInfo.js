@@ -1,7 +1,7 @@
 import React from "react";
 import { DatePicker, Select } from "antd";
 // import MForm, { useFormConfig } from "../src/MConfigForm";
-import MForm, { useFormConfig } from "../lib/MConfigForm";
+import MForm, { useFormConfig } from "mconfigform";
 import { useEffect } from "react";
 import { useMemo } from "react";
 

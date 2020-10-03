@@ -9,7 +9,6 @@ const FormItem = Form.Item;
 
 function _MForm(props, ref) {
   const { config = [], inited, form, ...newProps } = props;
-  console.log(config);
   const [, forceUpdata] = useState(null);
   const { getFieldDecorator } = form;
   const [initedConfig, setting] = useFormConfig(config, inited, { form });
@@ -58,7 +57,7 @@ function _MForm(props, ref) {
                   ...antdSetting
                 } = innerProps;
                 return (
-                  <Col key={id || componentIndex} {...itemCol || col}>
+                  <Col key={id || componentIndex} {...(itemCol || col)}>
                     <FormItem
                       label={label}
                       {...formItemLayout}

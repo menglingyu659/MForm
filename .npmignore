@@ -1,12 +1,14 @@
 node_modules/
-context
+context/
 src/
+test/
 dist/
 .babelrc
 main.js
 index.html
-yarn.json
+yarn.lock
 webpack.config.js
 webpack.prod.config.js
+webpack.npm.config.js
 .gitignor
-test/
+.npmignore
