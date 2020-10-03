@@ -3888,10 +3888,10 @@ map-visit@^1.0.0:
   dependencies:
     object-visit "^1.0.0"
 
-mconfigform@^1.0.2:
-  version "1.0.2"
-  resolved "https://registry.npm.taobao.org/mconfigform/download/mconfigform-1.0.2.tgz?cache=0&sync_timestamp=1601698537599&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fmconfigform%2Fdownload%2Fmconfigform-1.0.2.tgz#eb1bd23ef51cf7e68b7649e1f046dc51a9016c80"
-  integrity sha1-6xvSPvUc9+aLdknh8EbcUakBbIA=
+mconfigform@^1.0.3:
+  version "1.0.3"
+  resolved "https://registry.npm.taobao.org/mconfigform/download/mconfigform-1.0.3.tgz?cache=0&sync_timestamp=1601716698293&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fmconfigform%2Fdownload%2Fmconfigform-1.0.3.tgz#489155c2d9d7514e648914451f7d80d2d495db1c"
+  integrity sha1-SJFVwtnXUU5kiRRFH32A0tSV2xw=
 
 md5.js@^1.3.4:
   version "1.3.5"

@@ -45,7 +45,6 @@ function _MForm(props, ref) {
               {components.map((innerProps, componentIndex) => {
                 const {
                   col: itemCol,
-                  formItemLayout,
                   id,
                   label,
                   name,
@@ -58,11 +57,7 @@ function _MForm(props, ref) {
                 } = innerProps;
                 return (
                   <Col key={id || componentIndex} {...(itemCol || col)}>
-                    <FormItem
-                      label={label}
-                      {...formItemLayout}
-                      {...antdSetting}
-                    >
+                    <FormItem label={label} {...antdSetting}>
                       {name
                         ? getFieldDecorator(name, {
                             rules: [{ required, message: `${label}不能为空` }],

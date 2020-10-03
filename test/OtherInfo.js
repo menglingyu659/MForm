@@ -132,6 +132,9 @@ function OtherInfo(props) {
         id: 0,
         label: type,
         name: `${whereInfo}[]type`,
+        getFieldDecoratorOptions: {
+          initialValue: 2,
+        },
         element: {
           type: Select,
           methods: {
@@ -376,10 +379,8 @@ function OtherInfo(props) {
             marginRight: "24px",
           },
         },
-        formItemLayout: {
-          wrapperCol: {
-            span: 14,
-          },
+        wrapperCol: {
+          span: 14,
         },
         element: {
           type: Select,
@@ -391,13 +392,11 @@ function OtherInfo(props) {
         col: {
           span: 4,
         },
-        formItemLayout: {
-          labelCol: {
-            span: 0,
-          },
-          wrapperCol: {
-            span: 21,
-          },
+        labelCol: {
+          span: 0,
+        },
+        wrapperCol: {
+          span: 21,
         },
         element: {
           type: Select,
@@ -409,13 +408,11 @@ function OtherInfo(props) {
         col: {
           span: 4,
         },
-        formItemLayout: {
-          labelCol: {
-            span: 0,
-          },
-          wrapperCol: {
-            span: 21,
-          },
+        labelCol: {
+          span: 0,
+        },
+        wrapperCol: {
+          span: 21,
         },
         colon: false,
       },
@@ -424,13 +421,11 @@ function OtherInfo(props) {
         col: {
           span: 4,
         },
-        formItemLayout: {
-          labelCol: {
-            span: 0,
-          },
-          wrapperCol: {
-            span: 21,
-          },
+        labelCol: {
+          span: 0,
+        },
+        wrapperCol: {
+          span: 21,
         },
         colon: false,
       },
