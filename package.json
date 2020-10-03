@@ -1,8 +1,8 @@
 {
   "name": "mconfigform",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "this is a form package",
-  "main": "lib/configForm/index.js",
+  "main": "lib/index.js",
   "directories": {
     "lib": "lib"
   },
@@ -24,9 +24,7 @@
     "url": "https://github.com/menglingyu659/MForm/issues"
   },
   "homepage": "https://github.com/menglingyu659/MForm#readme",
-  "dependencies": {
-    "mconfigform": "^1.0.0"
-  },
+  "dependencies": {},
   "devDependencies": {
     "@babel/cli": "^7.11.6",
     "@babel/core": "^7.11.6",
@@ -45,6 +43,7 @@
     "extract-text-webpack-plugin": "^3.0.2",
     "html-webpack-plugin": "^4.5.0",
     "less-loader": "^7.0.1",
+    "mconfigform": "^1.0.2",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "style-loader": "^1.2.1",
