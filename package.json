@@ -1,29 +1,37 @@
 {
-  "name": "MForm",
+  "name": "m-config-form",
   "version": "1.0.0",
-  "description": "",
-  "main": "main.js",
+  "description": "this is a form package",
+  "main": "lib/index.js",
+  "directories": {
+    "lib": "lib"
+  },
   "scripts": {
     "dev": "webpack-dev-server",
-    "build": "webpack --config webpack.prod.config.js"
+    "build": "webpack --config webpack.prod.config.js",
+    "lib": "babel src -d lib"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/menglingyu659/MForm.git"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": [
+    "form"
+  ],
+  "author": "menglingyu659 <m1329855087@163.com>",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/menglingyu659/MForm/issues"
   },
   "homepage": "https://github.com/menglingyu659/MForm#readme",
   "dependencies": {
     "antd": "^3.26.18",
+    "m-config-form": "^1.0.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1"
   },
   "devDependencies": {
+    "@babel/cli": "^7.11.6",
     "@babel/core": "^7.11.6",
     "@babel/plugin-proposal-class-properties": "^7.10.4",
     "@babel/plugin-transform-runtime": "^7.11.5",
