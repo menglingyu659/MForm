@@ -1,6 +1,5 @@
 import React from "react";
 import { Typography, Icon } from "antd";
-import { overwriteMethods } from "./utils";
 
 const { Text } = Typography;
 
@@ -21,18 +20,14 @@ function Title(props) {
       ...titleProps
     } = {},
   } = props;
-  const newMethods =
-    methods && overwriteMethods(methods, configIndex, ownIndex);
   const addCallback = add(configIndex);
   const minusCallback = minus(configIndex);
   return (
     <span className="m-title">
       {title ? (
         typeof title === "object" ? (
-          typeof render === "function" ? (
-            render({ configIndex, ownIndex, addCallback, minusCallback })
-          ) : (
-            <Text strong {...titleProps} {...newMethods}>
+          render || (
+            <Text strong {...titleProps} {...methods}>
               {content}
             </Text>
           )
@@ -40,9 +35,7 @@ function Title(props) {
           <Text strong>{title}</Text>
         )
       ) : null}
-      {(typeof isShowAdd === "function"
-        ? isShowAdd(configIndex, ownIndex)
-        : isShowAdd) && (
+      {isShowAdd && (
         <span>
           &nbsp;&nbsp;
           <Icon
@@ -51,18 +44,14 @@ function Title(props) {
             onClick={function (...args) {
               typeof onAddClick === "function" &&
                 onAddClick.apply(this, [
-                  addCallback,
-                  configIndex,
-                  ownIndex,
+                  { add: addCallback, configIndex, ownIndex },
                   ...args,
                 ]);
             }}
           />
         </span>
       )}
-      {(typeof isShowMinus === "function"
-        ? isShowMinus(configIndex, ownIndex)
-        : isShowMinus) && (
+      {isShowMinus && (
         <span>
           &nbsp;&nbsp;
           <Icon
@@ -71,9 +60,7 @@ function Title(props) {
             onClick={function (...args) {
               typeof onMinusClick === "function" &&
                 onMinusClick.apply(this, [
-                  minusCallback,
-                  configIndex,
-                  ownIndex,
+                  { minus: minusCallback, configIndex, ownIndex },
                   ...args,
                 ]);
             }}

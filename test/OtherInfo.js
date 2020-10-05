@@ -19,27 +19,33 @@ const formLayout = {
 let count = 1;
 
 function OtherInfo(props) {
-  function onControllerChange(value, element, index) {
-    console.log(index);
+  function onControllerChange({ configIndex }, value, element) {
+    console.log(configIndex);
     if (value === 2 || value === 3) {
-      config[index].components = createPersonComponents();
+      proxyConfig[configIndex].components = createPersonComponents();
     } else {
-      config[index].components = createMechanismComponents();
+      proxyConfig[configIndex].components = createMechanismComponents();
     }
   }
 
-  function onshareholderChange(value, element, index) {
+  function onshareholderChange({ configIndex }, value, element) {
     if (value === 2 || value === 3) {
-      config[index].components = createPersonComponents("shareholderInfo", {
-        type: "控股股东",
-        name: "控股股东姓名",
-        id: "控股股东证件号码",
-        idExpiryDate: "控股股东证件有效期",
-      });
+      proxyConfig[configIndex].components = createPersonComponents(
+        "shareholderInfo",
+        {
+          type: "控股股东",
+          name: "控股股东姓名",
+          id: "控股股东证件号码",
+          idExpiryDate: "控股股东证件有效期",
+        }
+      );
     } else {
-      config[index].components = createMechanismComponents("shareholderInfo", {
-        type: "控股股东",
-      });
+      proxyConfig[configIndex].components = createMechanismComponents(
+        "shareholderInfo",
+        {
+          type: "控股股东",
+        }
+      );
     }
   }
 
@@ -208,28 +214,27 @@ function OtherInfo(props) {
         marginBottom: "5px",
       },
       title: {
-        content: `受益人信息`,
-        isShowAdd(index, ownIndex) {
+        content: ({ ownIndex }) => `受益人信息${ownIndex + 1}`,
+        isShowAdd({ ownIndex }) {
           return count === ownIndex + 1;
         },
         isShowMinus() {
           return count !== 1;
         },
-        onAddClick(add) {
-          console.log(config);
+        onAddClick({ add }) {
           count++;
           const components = createBeneficiaryConfig(num + 1);
           add(components);
         },
-        onMinusClick(miuns) {
+        onMinusClick({ minus }) {
           count--;
-          miuns();
+          minus();
         },
         methods: {
-          onClick(element, index) {
+          onClick({ index }, element) {
             console.log(element);
             console.log(index);
-            // config[index].title.content = "index";
+            // proxyConfig[index].title.content = "index";
             // console.log(arg, "arg");
           },
         },
@@ -442,7 +447,7 @@ function OtherInfo(props) {
     ];
   }
 
-  let initconfig = useMemo(
+  let config = useMemo(
     () => [
       {
         id: 0,
@@ -458,7 +463,10 @@ function OtherInfo(props) {
             element: {
               type: "span",
               methods: {
-                onClick(element, index) {},
+                onClick(element, index) {
+                  proxyConfig[index].$set("p", { arr: [{ a: "a" }] });
+                  // proxyConfig[index].p = { arr: [{ a: "a" }] };
+                },
               },
               children(props) {
                 return <em>em</em>;
@@ -604,11 +612,18 @@ function OtherInfo(props) {
     ],
     []
   );
-  const [config, inited] = useFormConfig(initconfig);
+  const [proxyConfig, inited] = useFormConfig(config);
   console.log("1", inited);
   useEffect(() => {
     console.log("inited", inited);
   }, []);
-  return <MForm {...{ config, inited, ...formLayout }} />;
+  console.log(<C>a</C>);
+  return (
+    <MForm {...{ config: proxyConfig, proxyConfig, inited, ...formLayout }} />
+  );
 }
 export default OtherInfo;
+
+function C() {
+  return <div>div</div>;
+}

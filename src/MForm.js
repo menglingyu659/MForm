@@ -2,22 +2,20 @@ import React, { useState, useLayoutEffect, useImperativeHandle } from "react";
 import { Col, Form, Row } from "antd";
 import { createFormItemContent } from "./createFormItemContent";
 import { useFormConfig } from "./useFormConfig";
-import { overwriteMethods } from "./utils";
+import { configDecorator } from "./utils";
 import Title from "./Title";
 
 const FormItem = Form.Item;
 
 function _MForm(props, ref) {
-  const { config = [], inited, form, ...newProps } = props;
+  const { config = [], inited, form, proxyConfig, ...newProps } = props;
   const [, forceUpdata] = useState(null);
-  const { getFieldDecorator } = form;
   const [initedConfig, setting] = useFormConfig(config, inited, { form });
+  const innerHooks = setting.getInnerHooks("menglingyu_innerHooks");
   useImperativeHandle(ref, () => [initedConfig, setting]);
-  const { getInnerHooks } = setting;
-  const innerHooks = getInnerHooks("menglingyu_innerHooks");
-  const { setRegister } = innerHooks;
+  configDecorator(initedConfig);
   useLayoutEffect(() => {
-    const unlisten = setRegister(() => {
+    const unlisten = innerHooks.setRegister(() => {
       forceUpdata({});
     });
     return () => {
@@ -49,35 +47,28 @@ function _MForm(props, ref) {
                   label,
                   name,
                   required = true,
+                  render,
                   getFieldDecoratorOptions,
                   //createFormItemContent所需要的信息
                   element,
                   //
                   ...antdSetting
                 } = innerProps;
-                return typeof innerProps === "function" ? (
-                  innerProps({ configIndex, ownIndex })
-                ) : (
-                  <Col key={id || componentIndex} {...(itemCol || col)}>
-                    <FormItem label={label} {...antdSetting}>
-                      {name
-                        ? getFieldDecorator(name, {
-                            rules: [{ required, message: `${label}不能为空` }],
-                            ...getFieldDecoratorOptions,
-                          })(
-                            createFormItemContent({
-                              element,
-                              configIndex,
-                              ownIndex,
-                            })
-                          )
-                        : createFormItemContent({
-                            element,
-                            configIndex,
-                            ownIndex,
-                          })}
-                    </FormItem>
-                  </Col>
+                return (
+                  render || (
+                    <Col key={id || componentIndex} {...(itemCol || col)}>
+                      <FormItem label={label} {...antdSetting}>
+                        {name
+                          ? form.getFieldDecorator(name, {
+                              rules: [
+                                { required, message: `${label}不能为空` },
+                              ],
+                              ...getFieldDecoratorOptions,
+                            })(createFormItemContent({ element }))
+                          : createFormItemContent({ element })}
+                      </FormItem>
+                    </Col>
+                  )
                 );
               })}
             </Row>

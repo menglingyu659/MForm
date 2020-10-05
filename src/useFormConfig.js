@@ -53,6 +53,13 @@ export class CreateConfig {
   //     });
   //   }
   // };
+  polyfillProxyCb = (value) => {
+    if (value.mark === "mmm_init") return value.value;
+    if (typeof value === "object" && !value.hasOwnProperty("__m__"))
+      value = this.pxying(value);
+    this.forceUpdate();
+    return value;
+  };
 
   $set = ((that) => {
     return function (prop, value) {
@@ -61,7 +68,7 @@ export class CreateConfig {
       } else {
         value = that.pxying(value);
         this[prop] = value;
-        polyfillProxy(this, that);
+        polyfillProxy(this, that.polyfillProxyCb);
         that.forceUpdate();
       }
     };
@@ -105,7 +112,7 @@ export class CreateConfig {
         ]);
         if (insertData.length && !window.Proxy) {
           // 兼容IE
-          polyfillProxy(this, that);
+          polyfillProxy(this, that.polyfillProxyCb);
           that.forceUpdate();
         }
         return methodReturn;
@@ -162,24 +169,24 @@ export class CreateConfig {
       if (Object.prototype.toString.call(config) === "[object Object]") {
         Object.setPrototypeOf(config, this.createObjectProto);
       }
-      this.createMark(config, "__m__", { $cfg: "cid" });
+      this.createMark(config, "__m__", { $cfg: "cid", originProps: {} });
     }
     for (const cfg in config) {
       const every = config[cfg];
       config[cfg] = this.pxying(every);
     }
-    return polyfillProxy(config, this);
+    return polyfillProxy(config, this.polyfillProxyCb);
   };
 
   initConfig = (config = []) => {
-    const initedConfig = config.map((item) => {
-      return this.pxying(item);
+    config.forEach((item, index) => {
+      config[index] = this.pxying(item);
     });
     if (!config.__m__) {
-      this.createMark(initedConfig, "__m__", { $cfg: "root" });
-      Object.setPrototypeOf(initedConfig, this.createArrayProto);
+      this.createMark(config, "__m__", { $cfg: "root", originProps: {} });
+      Object.setPrototypeOf(config, this.createArrayProto);
     }
-    return polyfillProxy(initedConfig, this);
+    return polyfillProxy(config, this.polyfillProxyCb);
   };
 
   add = (index) => (component) => {
