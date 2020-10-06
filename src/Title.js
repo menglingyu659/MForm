@@ -3,23 +3,23 @@ import { Typography, Icon } from "antd";
 
 const { Text } = Typography;
 
-function Title(props) {
+function Title(_props) {
   const {
     ownIndex,
     configIndex,
     title,
     innerHooks: { add, minus } = {},
     title: {
-      content,
+      label,
       isShowAdd,
       isShowMinus,
       render,
-      onAddClick,
-      onMinusClick,
-      methods,
+      handleAddClick,
+      handleMinusClick,
+      props,
       ...titleProps
     } = {},
-  } = props;
+  } = _props;
   const addCallback = add(configIndex);
   const minusCallback = minus(configIndex);
   return (
@@ -27,8 +27,8 @@ function Title(props) {
       {title ? (
         typeof title === "object" ? (
           render || (
-            <Text strong {...titleProps} {...methods}>
-              {content}
+            <Text strong {...titleProps} {...props}>
+              {label}
             </Text>
           )
         ) : (
@@ -42,8 +42,8 @@ function Title(props) {
             type="plus-circle"
             style={{ cursor: "pointer" }}
             onClick={function (...args) {
-              typeof onAddClick === "function" &&
-                onAddClick.apply(this, [
+              typeof handleAddClick === "function" &&
+                handleAddClick.apply(this, [
                   { add: addCallback, configIndex, ownIndex },
                   ...args,
                 ]);
@@ -58,8 +58,8 @@ function Title(props) {
             type="minus-circle-o"
             style={{ cursor: "pointer" }}
             onClick={function (...args) {
-              typeof onMinusClick === "function" &&
-                onMinusClick.apply(this, [
+              typeof handleMinusClick === "function" &&
+                handleMinusClick.apply(this, [
                   { minus: minusCallback, configIndex, ownIndex },
                   ...args,
                 ]);

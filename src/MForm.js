@@ -25,29 +25,40 @@ function _MForm(props, ref) {
   return (
     <Form {...newProps}>
       {initedConfig.map((p, configIndex) => {
-        if (typeof p !== "object" || p === null || Array.isArray(p))
+        if (Object.prototype.toString.call(p) !== "[object Object]")
           return null;
         const {
           id,
           title,
           components,
           divideIndex,
-          col = {},
+          props: boxProps,
+          row,
+          row: { props: rowProps } = {},
+          col,
+          col: { props: colProps } = {},
           ...boxSetting
         } = p;
         const ownIndex = divideIndex ? configIndex - divideIndex : null;
         return (
-          <div className="m-box" key={id || configIndex} {...boxSetting}>
+          <div
+            className="m-box"
+            key={id || configIndex}
+            {...boxSetting}
+            {...boxProps}
+          >
             <Title {...{ title, configIndex, ownIndex, innerHooks }} />
-            <Row>
+            <Row {...row} {...rowProps}>
               {components.map((innerProps, componentIndex) => {
                 const {
                   col: itemCol,
+                  col: { props: itemColProps } = {},
                   id,
                   label,
                   name,
                   required = true,
                   render,
+                  props,
                   getFieldDecoratorOptions,
                   //createFormItemContent所需要的信息
                   element,
@@ -56,8 +67,12 @@ function _MForm(props, ref) {
                 } = innerProps;
                 return (
                   render || (
-                    <Col key={id || componentIndex} {...(itemCol || col)}>
-                      <FormItem label={label} {...antdSetting}>
+                    <Col
+                      key={id || componentIndex}
+                      {...(itemCol || col)}
+                      {...(itemColProps || colProps)}
+                    >
+                      <FormItem label={label} {...antdSetting} {...props}>
                         {name
                           ? form.getFieldDecorator(name, {
                               rules: [

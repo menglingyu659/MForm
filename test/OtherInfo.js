@@ -1,8 +1,8 @@
 import React from "react";
 import { DatePicker, Select } from "antd";
-// import MForm, { useFormConfig } from "../lib";
+import MForm, { useFormConfig } from "../lib";
 // import MForm, { useFormConfig } from "../src";
-import MForm, { useFormConfig } from "mconfigform";
+// import MForm, { useFormConfig } from "mconfigform";
 import { useEffect } from "react";
 import { useMemo } from "react";
 
@@ -18,20 +18,21 @@ const formLayout = {
 };
 
 let count = 1;
+var num = 0;
 
 function OtherInfo(props) {
-  function onControllerChange({ configIndex }, value, element) {
-    console.log(configIndex);
+  function onControllerChange({ cfgIndex }, value, element) {
+    console.log(cfgIndex);
     if (value === 2 || value === 3) {
-      proxyConfig[configIndex].components = createPersonComponents();
+      proxyConfig[cfgIndex].components = createPersonComponents();
     } else {
-      proxyConfig[configIndex].components = createMechanismComponents();
+      proxyConfig[cfgIndex].components = createMechanismComponents();
     }
   }
 
-  function onshareholderChange({ configIndex }, value, element) {
+  function onshareholderChange({ cfgIndex }, value, element) {
     if (value === 2 || value === 3) {
-      proxyConfig[configIndex].components = createPersonComponents(
+      proxyConfig[cfgIndex].components = createPersonComponents(
         "shareholderInfo",
         {
           type: "控股股东",
@@ -41,7 +42,7 @@ function OtherInfo(props) {
         }
       );
     } else {
-      proxyConfig[configIndex].components = createMechanismComponents(
+      proxyConfig[cfgIndex].components = createMechanismComponents(
         "shareholderInfo",
         {
           type: "控股股东",
@@ -68,7 +69,7 @@ function OtherInfo(props) {
         name: `${whereInfo}[]type`,
         element: {
           type: Select,
-          methods: {
+          props: {
             onChange:
               whereInfo === "controllerInfo"
                 ? onControllerChange
@@ -144,7 +145,7 @@ function OtherInfo(props) {
         },
         element: {
           type: Select,
-          methods: {
+          props: {
             onChange:
               whereInfo === "controllerInfo"
                 ? onControllerChange
@@ -209,33 +210,34 @@ function OtherInfo(props) {
     return {
       id: `active${num}`,
       divideIndex: 4,
-      style: {
-        border: "1px dashed #aaa",
-        padding: "10px",
-        marginBottom: "5px",
+      props: {
+        style: {
+          border: "1px dashed #aaa",
+          padding: "10px",
+          marginBottom: "5px",
+        },
       },
       title: {
-        content: ({ ownIndex }) => `受益人信息${ownIndex + 1}`,
+        label: ({ ownIndex }) => `受益人信息${ownIndex + 1}`,
         isShowAdd({ ownIndex }) {
           return count === ownIndex + 1;
         },
         isShowMinus() {
           return count !== 1;
         },
-        onAddClick({ add }) {
+        handleAddClick({ add }) {
           count++;
           const components = createBeneficiaryConfig(num + 1);
           add(components);
         },
-        onMinusClick({ minus }) {
+        handleMinusClick({ minus }) {
           count--;
           minus();
         },
-        methods: {
-          onClick({ index }, element) {
-            console.log(element);
-            console.log(index);
-            // proxyConfig[index].title.content = "index";
+        props: {
+          onClick(p) {
+            console.log(p);
+            // proxyConfig[cfgIndex].title.label = "cfgIndex";
             // console.log(arg, "arg");
           },
         },
@@ -390,7 +392,9 @@ function OtherInfo(props) {
         },
         element: {
           type: Select,
-          className: "w",
+          props: {
+            className: "w",
+          },
         },
       },
       {
@@ -447,15 +451,15 @@ function OtherInfo(props) {
       },
     ];
   }
-
   let config = useMemo(
     () => [
       {
         id: 0,
-        title: "法人信息",
+        title: "a",
         col: {
           span: 8,
         },
+        l: "",
         components: [
           {
             id: 0,
@@ -463,16 +467,29 @@ function OtherInfo(props) {
             name: "legalPersonName",
             element: {
               type: "span",
-              methods: {
-                onClick(element, index) {
-                  proxyConfig[index].$set("p", { arr: [{ a: "a" }] });
-                  // proxyConfig[index].p = { arr: [{ a: "a" }] };
-                },
-              },
               children(props) {
                 return <em>em</em>;
               },
-              className: "spanm",
+              props: {
+                onClick(p, element) {
+                  p.cfg.title = {
+                    label: "法人信息",
+                    onClick(p) {
+                      console.log((p.cfg.title = "w"));
+                    },
+                  };
+                  console.log(p);
+                  // num++;
+                  // console.log(num);
+                  // proxyConfig[cfgIndex].l = "3";
+                  // if (num === 3) {
+                  //   proxyConfig[cfgIndex].components[0].$set("label", "3");
+                  // }
+                  // proxyConfig[cfgIndex].$set("p", { arr: [{ a: "a" }] });
+                  // proxyConfig[cfgIndex].p = { arr: [{ a: "a" }] };
+                },
+                className: "spanm",
+              },
             },
           },
           {
@@ -611,7 +628,7 @@ function OtherInfo(props) {
         ],
       },
     ],
-    []
+    [num]
   );
   const [proxyConfig, inited] = useFormConfig(config);
   console.log("1", inited);

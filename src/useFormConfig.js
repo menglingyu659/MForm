@@ -66,6 +66,9 @@ export class CreateConfig {
       if (window.Proxy) {
         this[prop] = value;
       } else {
+        if (this.__m__.originProps[prop] && value.mark !== "mmm_init") {
+          this.__m__.originProps[prop] = undefined;
+        }
         value = that.pxying(value);
         this[prop] = value;
         polyfillProxy(this, that.polyfillProxyCb);
@@ -90,34 +93,36 @@ export class CreateConfig {
         enumerable: false,
       },
     });
-    methodsToPatch.forEach((method) => {
-      const that = this;
-      this.createMark(createArrayProto, method, function (...args) {
-        let insertData = [];
-        switch (method) {
-          case "push":
-          case "unshift":
-            insertData = args.splice(0);
-            break;
-          case "splice":
-            insertData = args.splice(2);
-            break;
-        }
-        const _args = insertData.map((item) => {
-          return that.pxying(item);
+    if (!window.Proxy) {
+      methodsToPatch.forEach((method) => {
+        const that = this;
+        this.createMark(createArrayProto, method, function (...args) {
+          let insertData = [];
+          switch (method) {
+            case "push":
+            case "unshift":
+              insertData = args.splice(0);
+              break;
+            case "splice":
+              insertData = args.splice(2);
+              break;
+          }
+          const _args = insertData.map((item) => {
+            return that.pxying(item);
+          });
+          const methodReturn = arrayProto[method].apply(this, [
+            ...args,
+            ..._args,
+          ]);
+          if (insertData.length) {
+            // 兼容IE
+            polyfillProxy(this, that.polyfillProxyCb);
+            that.forceUpdate();
+          }
+          return methodReturn;
         });
-        const methodReturn = arrayProto[method].apply(this, [
-          ...args,
-          ..._args,
-        ]);
-        if (insertData.length && !window.Proxy) {
-          // 兼容IE
-          polyfillProxy(this, that.polyfillProxyCb);
-          that.forceUpdate();
-        }
-        return methodReturn;
       });
-    });
+    }
     return createArrayProto;
   };
 
@@ -224,9 +229,9 @@ function useFormConfig(config, inited, inserter) {
       const _target = insertFormObject(inserter, inited);
       configRef.current = [config, _target];
     } else {
-      const [_config, inited] = new CreateConfig(config).getConfig();
+      const [proxyConfig, inited] = new CreateConfig(config).getConfig();
       const _target = insertFormObject(inserter, inited);
-      configRef.current = [_config, _target];
+      configRef.current = [proxyConfig, _target];
     }
   }
   return configRef.current;
