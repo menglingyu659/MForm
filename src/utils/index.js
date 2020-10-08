@@ -112,8 +112,8 @@ function cfgDecorator(cfg, par, key) {
 export function configDecorator(config = []) {
   config.forEach((cfg, cfgIndex) => {
     const { divideIndex } = cfg;
-    const ownIndex = divideIndex ? cfgIndex - divideIndex : null;
-    cfgDecorator(cfg, { cfgIndex, ownIndex, cfg });
+    const ownIndex = divideIndex ? cfgIndex - divideIndex : undefined;
+    cfgDecorator(cfg, { cfgIndex, ownIndex, cfg, divideIndex });
   });
   return config;
 }
