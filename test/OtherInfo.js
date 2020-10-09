@@ -21,59 +21,43 @@ let count = 1;
 var num = 0;
 
 function OtherInfo(props) {
-  function onControllerChange({ cfgIndex }, value, element) {
+  function change2({ cfgIndex }, value, element) {
     console.log(cfgIndex);
     if (value === 2 || value === 3) {
-      proxyConfig[cfgIndex].components = createPersonComponents();
+      proxyConfig[cfgIndex].components = pc();
     } else {
-      proxyConfig[cfgIndex].components = createMechanismComponents();
+      proxyConfig[cfgIndex].components = mc();
     }
   }
 
-  function onshareholderChange({ cfgIndex }, value, element) {
+  function change1({ cfgIndex }, value, element) {
     if (value === 2 || value === 3) {
-      proxyConfig[cfgIndex].components = createPersonComponents(
-        "shareholderInfo",
-        {
-          type: "控股股东",
-          name: "控股股东姓名",
-          id: "控股股东证件号码",
-          idExpiryDate: "控股股东证件有效期",
-        }
-      );
+      proxyConfig[cfgIndex].components = pc("info2", {
+        type: "kk",
+        name: "kk姓名",
+        id: "kk证件号码",
+        idExpiryDate: "kk证件有效期",
+      });
     } else {
-      proxyConfig[cfgIndex].components = createMechanismComponents(
-        "shareholderInfo",
-        {
-          type: "控股股东",
-        }
-      );
+      proxyConfig[cfgIndex].components = mc("info2", {
+        type: "kk",
+      });
     }
   }
 
-  function createMechanismComponents(
-    whereInfo = "controllerInfo",
-    {
-      type = "实控人标志",
-      name = "机构名称",
-      id = "统一社会信用代码",
-      capitalAmount = "出资金额（元）",
-      capitalRatio = "出资占比（%）",
-      isMrgRpt = "是否合并报表",
-    } = {}
+  function mc(
+    w = "Info1",
+    { type = "十标志", name = "机构名称", id = "统一社会信用代码" } = {}
   ) {
     return [
       {
         id: 0,
         label: type,
-        name: `${whereInfo}[]type`,
+        name: `${w}[]type`,
         element: {
           type: Select,
           props: {
-            onChange:
-              whereInfo === "controllerInfo"
-                ? onControllerChange
-                : onshareholderChange,
+            onChange: w === "Info1" ? change2 : change1,
           },
           options: [
             {
@@ -97,59 +81,37 @@ function OtherInfo(props) {
       {
         id: 1,
         label: name,
-        name: `${whereInfo}[]name`,
+        name: `${w}[]name`,
       },
       {
         id: 2,
         label: id,
-        name: `${whereInfo}[]id`,
-      },
-      {
-        id: 3,
-        label: capitalAmount,
-        name: `${whereInfo}[]capitalAmount`,
-      },
-      {
-        id: 4,
-        label: capitalRatio,
-        name: `${whereInfo}[]capitalRatio`,
-      },
-      {
-        id: 5,
-        label: isMrgRpt,
-        name: `${whereInfo}[]isMrgRpt`,
-        element: {},
+        name: `${w}[]id`,
       },
     ];
   }
 
-  function createPersonComponents(
-    whereInfo = "controllerInfo",
+  function pc(
+    w = "Info1",
     {
-      type = "实控人标志",
-      name = "实控人姓名",
-      id = "实控人证件号码",
-      idExpiryDate = "实控人证件有效期",
-      capitalAmount = "出资金额（元）",
-      capitalRatio = "出资占比（%）",
-      isMrgRpt = "是否合并报表",
+      type = "十标志",
+      name = "十姓名",
+      id = "十证件号码",
+      idExpiryDate = "十证件有效期",
     } = {}
   ) {
     return [
       {
         id: 0,
         label: type,
-        name: `${whereInfo}[]type`,
+        name: `${w}[]type`,
         getFieldDecoratorOptions: {
           initialValue: 2,
         },
         element: {
           type: Select,
           props: {
-            onChange:
-              whereInfo === "controllerInfo"
-                ? onControllerChange
-                : onshareholderChange,
+            onChange: w === "Info1" ? change2 : change1,
           },
           options: [
             {
@@ -173,40 +135,25 @@ function OtherInfo(props) {
       {
         id: 1,
         label: name,
-        name: `${whereInfo}[]name`,
+        name: `${w}[]name`,
       },
       {
         id: 2,
         label: id,
-        name: `${whereInfo}[]id`,
+        name: `${w}[]id`,
       },
       {
         id: 3,
         label: idExpiryDate,
-        name: `${whereInfo}[]idExpiryDate`,
+        name: `${w}[]idExpiryDate`,
         element: {
           type: DatePicker,
         },
       },
-      {
-        id: 4,
-        label: capitalAmount,
-        name: `${whereInfo}[]capitalAmount`,
-      },
-      {
-        id: 5,
-        label: capitalRatio,
-        name: `${whereInfo}[]capitalRatio`,
-      },
-      {
-        id: 6,
-        label: isMrgRpt,
-        name: `${whereInfo}[]isMrgRpt`,
-      },
     ];
   }
 
-  function createBeneficiaryConfig(num = 0) {
+  function cbf(num = 0) {
     return {
       id: `active${num}`,
       divideIndex: 4,
@@ -218,7 +165,7 @@ function OtherInfo(props) {
         },
       },
       title: {
-        label: ({ ownIndex }) => `受益人信息${ownIndex + 1}`,
+        label: ({ ownIndex }) => `弟弟答案${ownIndex + 1}`,
         isShowAdd({ ownIndex }) {
           return count === ownIndex + 1;
         },
@@ -248,209 +195,23 @@ function OtherInfo(props) {
       components: [
         {
           id: 0,
-          label: "受益人姓名",
-        },
-        {
-          id: 1,
-          label: "受益人证件号码",
+          label: "弟弟答案姓名",
         },
         {
           id: 2,
-          label: "受益人证件有效期",
+          label: "弟弟答案证件有效期",
           element: {
             type: DatePicker,
           },
         },
         {
           id: 3,
-          label: "受益人地址",
+          label: "弟弟答案地址",
         },
       ],
     };
   }
 
-  function createEnpseBasicInfoComponents() {
-    return [
-      {
-        id: 0,
-        label: "是否上市公司",
-        element: {
-          type: Select,
-          options: [
-            {
-              id: 0,
-              label: "是",
-              value: 1,
-            },
-            {
-              id: 1,
-              label: "否",
-              value: 2,
-            },
-          ],
-        },
-      },
-      {
-        id: 1,
-        label: "企业出资人经济成分",
-        element: {
-          type: Select,
-          options: [
-            {
-              id: 0,
-              label: "是",
-              value: 1,
-            },
-            {
-              id: 1,
-              label: "否",
-              value: 2,
-            },
-          ],
-        },
-      },
-      {
-        id: 2,
-        label: "企业邮箱地址",
-        name: "controllerName",
-      },
-      {
-        id: 3,
-        label: "企业邮编",
-        name: "controllerId",
-      },
-      {
-        id: 4,
-        label: "企业地址",
-        name: "controllerIdExpiryDate",
-        element: {
-          type: DatePicker,
-        },
-      },
-      {
-        id: 5,
-        label: "员工人数",
-        name: "chuzi",
-      },
-      {
-        id: 6,
-        label: "注册资本（元）%）",
-        name: "bili",
-      },
-      {
-        id: 7,
-        label: "实收资本（元）",
-        name: "baobiao",
-      },
-      {
-        id: 8,
-        label: "年收入（元）",
-        name: "baobiao",
-      },
-      {
-        id: 9,
-        label: "年收入（元）",
-        name: "baobiao",
-      },
-      {
-        id: 10,
-        label: "年收入（元）",
-        name: "baobiao",
-      },
-      {
-        id: 11,
-        label: "年收入（元）",
-        name: "baobiao",
-      },
-      {
-        id: 12,
-        label: "总资产（元）",
-        name: "baobiao",
-      },
-      {
-        id: 13,
-        label: "净资产（元）",
-        name: "baobiao",
-      },
-      {
-        id: 14,
-        label: "营业收入（元）",
-        name: "baobiao",
-      },
-      {
-        id: 15,
-        label: "国标分类",
-        name: "baobiao",
-        col: {
-          span: 6,
-          style: {
-            marginRight: "24px",
-          },
-        },
-        wrapperCol: {
-          span: 14,
-        },
-        element: {
-          type: Select,
-          props: {
-            className: "w",
-          },
-        },
-      },
-      {
-        id: 16,
-        col: {
-          span: 4,
-        },
-        labelCol: {
-          span: 0,
-        },
-        wrapperCol: {
-          span: 21,
-        },
-        element: {
-          type: Select,
-        },
-        colon: false,
-      },
-      {
-        id: 17,
-        col: {
-          span: 4,
-        },
-        labelCol: {
-          span: 0,
-        },
-        wrapperCol: {
-          span: 21,
-        },
-        colon: false,
-      },
-      {
-        id: 18,
-        col: {
-          span: 4,
-        },
-        labelCol: {
-          span: 0,
-        },
-        wrapperCol: {
-          span: 21,
-        },
-        colon: false,
-      },
-      {
-        id: 19,
-        label: "国标补充分类",
-        colon: false,
-      },
-      {
-        id: 20,
-        label: "战略新兴产业类型",
-        colon: false,
-      },
-    ];
-  }
   let config = useMemo(
     () => [
       {
@@ -463,8 +224,8 @@ function OtherInfo(props) {
         components: [
           {
             id: 0,
-            label: "法定代表人名称",
-            name: "legalPersonName",
+            label: "窝窝名称",
+            name: "wowoName",
             element: {
               type: "span",
               children(props) {
@@ -494,8 +255,8 @@ function OtherInfo(props) {
           },
           {
             id: 1,
-            label: "法定代表人证件号码",
-            name: "legalPersonId",
+            label: "窝窝证件号码",
+            name: "wowoId",
             type: "span",
             element: {
               children() {
@@ -506,130 +267,39 @@ function OtherInfo(props) {
           },
           {
             id: 2,
-            label: "法定代表人证件有效日期",
-            name: "legalPersonIdExpiryDate",
+            label: "窝窝证件有效日期",
+            name: "wowoIdExpiryDate",
             element: {
               type: DatePicker,
             },
-          },
-          {
-            id: 3,
-            label: "法定代表人电话",
-            name: "legalPersonPhone",
-          },
-          {
-            id: 4,
-            label: "法定代表人邮编",
-            name: "legalPersonPostalCode",
-          },
-          {
-            id: 5,
-            label: "法定代表人地址",
-            name: "legalPersonAddress",
           },
         ],
       },
       {
         id: 1,
-        title: "操作员信息",
+        title: "十信息",
         col: {
           span: 8,
         },
-        components: [
-          {
-            id: 0,
-            label: "操作员名称",
-            name: "operatorName",
-            element: { type: "span" },
-          },
-          {
-            id: 1,
-            label: "操作员证件号码",
-            name: "operatorId",
-            element: { type: "span" },
-          },
-          {
-            id: 2,
-            label: "操作员证件有效期",
-            name: "operatorIdExpiryDate",
-            element: { type: DatePicker },
-          },
-        ],
-      },
-      {
-        id: 2,
-        title: "实控人信息",
-        col: {
-          span: 8,
-        },
-        components: createPersonComponents(),
+        components: pc(),
       },
       {
         id: 3,
-        title: "控股股东信息",
+        title: "kk信息",
         col: {
           span: 8,
         },
-        components: createPersonComponents("shareholderInfo", {
-          type: "控股股东",
-          name: "控股股东姓名",
-          id: "控股股东证件号码",
-          idExpiryDate: "控股股东证件有效期",
+        components: pc("info2", {
+          type: "kk",
+          name: "kk姓名",
+          id: "kk证件号码",
+          idExpiryDate: "kk证件有效期",
           capitalAmount: "出资金额（元）",
           capitalRatio: "出资占比（%）",
           isMrgRpt: "是否合并报表",
         }),
       },
-      createBeneficiaryConfig(),
-      {
-        id: 4,
-        title: "企业基本信息",
-        col: {
-          span: 8,
-        },
-        components: createEnpseBasicInfoComponents(),
-      },
-      {
-        id: 5,
-        title: "银行信息",
-        col: {
-          span: 8,
-        },
-        components: [
-          {
-            id: 0,
-            label: "基本户开户银行",
-            name: "baobiao",
-          },
-          {
-            id: 1,
-            label: "基本户开户地区",
-            name: "baobiao",
-          },
-
-          {
-            id: 2,
-            //   label: "是否合并报表",
-            name: "baobiao",
-            colon: false,
-          },
-          {
-            id: 3,
-            label: "基本户支行名称",
-            name: "baobiao",
-          },
-          {
-            id: 4,
-            label: "基本存款账号",
-            name: "baobiao",
-          },
-          {
-            id: 5,
-            label: "中征码",
-            name: "baobiao",
-          },
-        ],
-      },
+      cbf(),
     ],
     [num]
   );
