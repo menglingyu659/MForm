@@ -5,14 +5,8 @@ const { Option, OptGroup } = Select;
 
 function createFormItemContent(_props) {
   const {
-    element: {
-      type: Com = Input,
-      options,
-      group,
-      props,
-      render,
-      ...elementProps
-    } = {},
+    _type,
+    element: { type, options, group, props, render, ...elementProps } = {},
   } = _props;
   const children = options ? (
     group ? (
@@ -35,6 +29,7 @@ function createFormItemContent(_props) {
       })
     )
   ) : null;
+  const Com = type || _type || Input;
   return render || <Com children={children} {...elementProps} {...props}></Com>;
 }
 

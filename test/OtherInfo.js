@@ -1,8 +1,8 @@
 import React from "react";
-import { DatePicker, Select } from "antd";
-import MForm, { useFormConfig } from "../lib";
+import { DatePicker, Input, Select } from "antd";
+// import MForm, { useFormConfig } from "../lib";
 // import MForm, { useFormConfig } from "../src";
-// import MForm, { useFormConfig } from "mconfigform";
+import MForm, { useFormConfig } from "mconfigform";
 import { useEffect } from "react";
 import { useMemo } from "react";
 
@@ -496,8 +496,11 @@ function OtherInfo(props) {
             id: 1,
             label: "法定代表人证件号码",
             name: "legalPersonId",
+            type: "span",
             element: {
-              type: "span",
+              children() {
+                return "w";
+              },
             },
             required: false,
           },

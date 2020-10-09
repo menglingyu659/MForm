@@ -59,6 +59,7 @@ function _MForm(props, ref) {
                   required = true,
                   render,
                   props,
+                  type: _type,
                   getFieldDecoratorOptions,
                   //createFormItemContent所需要的信息
                   element,
@@ -79,8 +80,8 @@ function _MForm(props, ref) {
                                 { required, message: `${label}不能为空` },
                               ],
                               ...getFieldDecoratorOptions,
-                            })(createFormItemContent({ element }))
-                          : createFormItemContent({ element })}
+                            })(createFormItemContent({ element, _type }))
+                          : createFormItemContent({ element, _type })}
                       </FormItem>
                     </Col>
                   )
