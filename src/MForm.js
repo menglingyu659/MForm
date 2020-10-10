@@ -63,7 +63,6 @@ function _MForm(props, ref) {
             >
               {components.map((innerProps, componentIndex) => {
                 const {
-                  col: { props: itemColProps, itemCol } = {},
                   id,
                   label,
                   name,
@@ -72,6 +71,7 @@ function _MForm(props, ref) {
                   props,
                   type: _type,
                   getFieldDecoratorOptions,
+                  col: { props: itemColProps, ...itemCol } = {},
                   //createFormItemContent所需要的信息
                   element: { props: elementProps, ...element } = {},
                   //
