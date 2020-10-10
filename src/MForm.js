@@ -8,7 +8,17 @@ import Title from "./Title";
 const FormItem = Form.Item;
 
 function _MForm(props, ref) {
-  const { config = [], inited, form, proxyConfig, ...newProps } = props;
+  const {
+    config = [],
+    inited,
+    form,
+    proxyConfig,
+    row: formRow,
+    row: { props: formRowProps } = {},
+    col: formCol,
+    col: { props: formColProps } = {},
+    ...newProps
+  } = props;
   const [, forceUpdata] = useState(null);
   const [initedConfig, setting] = useFormConfig(config, inited, { form });
   const innerHooks = setting.getInnerHooks("menglingyu_innerHooks");
@@ -32,6 +42,7 @@ function _MForm(props, ref) {
           title,
           components,
           divideIndex,
+          formItemLayout,
           props: boxProps,
           row,
           row: { props: rowProps } = {},
@@ -48,7 +59,10 @@ function _MForm(props, ref) {
             {...boxProps}
           >
             <Title {...{ title, configIndex, ownIndex, innerHooks }} />
-            <Row {...row} {...rowProps}>
+            <Row
+              {...{ ...formRow, ...row }}
+              {...{ ...formRowProps, ...rowProps }}
+            >
               {components.map((innerProps, componentIndex) => {
                 const {
                   col: itemCol,
@@ -70,10 +84,15 @@ function _MForm(props, ref) {
                   render || (
                     <Col
                       key={validatorKey(id, componentIndex)}
-                      {...{ ...itemCol, ...col }}
-                      {...{ ...itemColProps, ...colProps }}
+                      {...{ ...formCol, ...col, ...itemCol }}
+                      {...{ ...formColProps, ...colProps, ...itemColProps }}
                     >
-                      <FormItem label={label} {...antdSetting} {...props}>
+                      <FormItem
+                        label={label}
+                        {...formItemLayout}
+                        {...antdSetting}
+                        {...props}
+                      >
                         {name
                           ? form.getFieldDecorator(name, {
                               rules: [
