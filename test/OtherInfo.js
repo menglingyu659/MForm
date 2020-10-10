@@ -56,6 +56,7 @@ function OtherInfo(props) {
         name: `${w}[]type`,
         element: {
           type: Select,
+          getPopupContainer: () => document.querySelector(".m-modal"),
           props: {
             onChange: w === "Info1" ? change2 : change1,
           },
@@ -111,6 +112,7 @@ function OtherInfo(props) {
         element: {
           type: Select,
           props: {
+            getPopupContainer: () => document.querySelector(".m-modal"),
             onChange: w === "Info1" ? change2 : change1,
           },
           options: [
