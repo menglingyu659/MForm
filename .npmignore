@@ -12,3 +12,4 @@ webpack.prod.config.js
 webpack.npm.config.js
 .gitignor
 .npmignore
+.vscode
