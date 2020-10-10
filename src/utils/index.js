@@ -117,3 +117,7 @@ export function configDecorator(config = []) {
   });
   return config;
 }
+
+export function validator(id, index) {
+  return [undefined, null].includes(id) ? index : id;
+}

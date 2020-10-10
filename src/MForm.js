@@ -10,6 +10,7 @@ const FormItem = Form.Item;
 function _MForm(props, ref) {
   const { config = [], inited, form, proxyConfig, ...newProps } = props;
   const [, forceUpdata] = useState(null);
+  console.log(config);
   const [initedConfig, setting] = useFormConfig(config, inited, { form });
   const innerHooks = setting.getInnerHooks("menglingyu_innerHooks");
   useImperativeHandle(ref, () => [initedConfig, setting]);
@@ -43,7 +44,7 @@ function _MForm(props, ref) {
         return (
           <div
             className="m-box"
-            key={id || configIndex}
+            key={configDecorator(id, configIndex)}
             {...boxSetting}
             {...boxProps}
           >
@@ -69,9 +70,9 @@ function _MForm(props, ref) {
                 return (
                   render || (
                     <Col
-                      key={id || componentIndex}
-                      {...(itemCol || col)}
-                      {...(itemColProps || colProps)}
+                      key={configDecorator(id, componentIndex)}
+                      {...{ ...itemCol, ...col }}
+                      {...{ ...itemColProps, ...colProps }}
                     >
                       <FormItem label={label} {...antdSetting} {...props}>
                         {name
