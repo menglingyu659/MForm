@@ -13,10 +13,9 @@ function _MForm(props, ref) {
     inited,
     form,
     proxyConfig,
-    row: formRow,
-    row: { props: formRowProps } = {},
-    col: formCol,
-    col: { props: formColProps } = {},
+    element: { props: formElementProps, ...formElement } = {},
+    row: { props: formRowProps, ...formRow } = {},
+    col: { props: formColProps, ...formCol } = {},
     ...newProps
   } = props;
   const [, forceUpdata] = useState(null);
@@ -44,10 +43,9 @@ function _MForm(props, ref) {
           divideIndex,
           formItemLayout,
           props: boxProps,
-          row,
-          row: { props: rowProps } = {},
-          col,
-          col: { props: colProps } = {},
+          element: { props: cfgElementProps, ...cfgElement } = {},
+          row: { props: rowProps, ...row } = {},
+          col: { props: colProps, ...col } = {},
           ...boxSetting
         } = p;
         const ownIndex = divideIndex ? configIndex - divideIndex : null;
@@ -65,8 +63,7 @@ function _MForm(props, ref) {
             >
               {components.map((innerProps, componentIndex) => {
                 const {
-                  col: itemCol,
-                  col: { props: itemColProps } = {},
+                  col: { props: itemColProps, itemCol } = {},
                   id,
                   label,
                   name,
@@ -76,10 +73,20 @@ function _MForm(props, ref) {
                   type: _type,
                   getFieldDecoratorOptions,
                   //createFormItemContent所需要的信息
-                  element,
+                  element: { props: elementProps, ...element } = {},
                   //
                   ...antdSetting
                 } = innerProps;
+                const _element = {
+                  ...formElement,
+                  ...cfgElement,
+                  ...element,
+                  props: {
+                    ...formElementProps,
+                    ...cfgElementProps,
+                    ...elementProps,
+                  },
+                };
                 return (
                   render || (
                     <Col
@@ -99,8 +106,13 @@ function _MForm(props, ref) {
                                 { required, message: `${label}不能为空` },
                               ],
                               ...getFieldDecoratorOptions,
-                            })(createFormItemContent({ element, _type }))
-                          : createFormItemContent({ element, _type })}
+                            })(
+                              createFormItemContent({
+                                element: _element,
+                                _type,
+                              })
+                            )
+                          : createFormItemContent({ element: _element, _type })}
                       </FormItem>
                     </Col>
                   )
