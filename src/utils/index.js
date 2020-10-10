@@ -118,6 +118,6 @@ export function configDecorator(config = []) {
   return config;
 }
 
-export function validator(id, index) {
+export function validatorKey(id, index) {
   return [undefined, null].includes(id) ? index : id;
 }

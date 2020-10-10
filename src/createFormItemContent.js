@@ -1,6 +1,6 @@
 import React from "react";
 import { Input, Select } from "antd";
-import { configDecorator } from "./utils";
+import { validatorKey } from "./utils";
 
 const { Option, OptGroup } = Select;
 
@@ -14,7 +14,7 @@ function createFormItemContent(_props) {
       <OptGroup label={group}>
         {options.map(({ id, label, value }, comIndex) => {
           return (
-            <Option key={configDecorator(id, comIndex)} value={value}>
+            <Option key={validatorKey(id, comIndex)} value={value}>
               {label}
             </Option>
           );
@@ -23,7 +23,7 @@ function createFormItemContent(_props) {
     ) : (
       options.map(({ id, label, value }, comIndex) => {
         return (
-          <Option key={configDecorator(id, comIndex)} value={value}>
+          <Option key={validatorKey(id, comIndex)} value={value}>
             {label}
           </Option>
         );

@@ -2,7 +2,7 @@ import React, { useState, useLayoutEffect, useImperativeHandle } from "react";
 import { Col, Form, Row } from "antd";
 import { createFormItemContent } from "./createFormItemContent";
 import { useFormConfig } from "./useFormConfig";
-import { configDecorator } from "./utils";
+import { configDecorator, validatorKey } from "./utils";
 import Title from "./Title";
 
 const FormItem = Form.Item;
@@ -10,7 +10,6 @@ const FormItem = Form.Item;
 function _MForm(props, ref) {
   const { config = [], inited, form, proxyConfig, ...newProps } = props;
   const [, forceUpdata] = useState(null);
-  console.log(config);
   const [initedConfig, setting] = useFormConfig(config, inited, { form });
   const innerHooks = setting.getInnerHooks("menglingyu_innerHooks");
   useImperativeHandle(ref, () => [initedConfig, setting]);
@@ -44,7 +43,7 @@ function _MForm(props, ref) {
         return (
           <div
             className="m-box"
-            key={configDecorator(id, configIndex)}
+            key={validatorKey(id, configIndex)}
             {...boxSetting}
             {...boxProps}
           >
@@ -70,7 +69,7 @@ function _MForm(props, ref) {
                 return (
                   render || (
                     <Col
-                      key={configDecorator(id, componentIndex)}
+                      key={validatorKey(id, componentIndex)}
                       {...{ ...itemCol, ...col }}
                       {...{ ...itemColProps, ...colProps }}
                     >
