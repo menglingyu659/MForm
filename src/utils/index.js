@@ -57,6 +57,7 @@ function webkit(config, callback) {
     },
     set: (target, prop, value) => {
       if (target.__m__.originProps[prop] && value.mark !== "mmm_init") {
+        //IE写在$set方法中
         target.__m__.originProps[prop] = undefined;
       }
       Reflect.set(target, prop, callback(value));
@@ -92,18 +93,30 @@ function cfgDecorator(cfg, par, key) {
     if (key === "components")
       par = { ...par, cmpt: cfg[prop], cmptIndex: prop };
     const value = cfg.__m__.originProps[prop] || cfg[prop];
-    if (typeof value === "function" && !/^(on|type|handle).*/.test(prop)) {
+    if (
+      //处理动态绑定，children,render情况
+      typeof value === "function" &&
+      !/^(on|type|handle|\$).*/.test(prop) &&
+      !cfg.__m__.originProps[`$${prop}`]
+    ) {
       const newVla = value(par);
       cfg[prop] = cfgDeal(cfg, prop, value, newVla);
     } else if (typeof value === "function" && /^on.*/.test(prop)) {
+      //处理原生js事件
       const newVla = overwriteMethod(value, par);
       cfg[prop] = cfgDeal(cfg, prop, value, newVla);
     } else if (typeof value === "object") {
+      //递归对象
       cfgDecorator(
         value,
         par,
         prop === "components" ? "components" : undefined
       );
+    } else if (/^\$(.*)/.test(prop)) {
+      //处理第三方函数
+      const _prop = RegExp.$1;
+      cfg[_prop] = cfgDeal(cfg, prop, value, value);
+      delete cfg[prop];
     }
   }
   return cfg;
@@ -120,4 +133,12 @@ export function configDecorator(config = []) {
 
 export function validatorKey(id, index) {
   return [undefined, null].includes(id) ? index : id;
+}
+
+//创建__m__对象
+export function createMark(originObjorArr, key = "__m__", values = {}) {
+  Object.defineProperty(originObjorArr, key, {
+    value: values,
+    enumerable: false,
+  });
 }

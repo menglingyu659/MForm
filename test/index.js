@@ -5,8 +5,10 @@ import OtherInfo from "./OtherInfo";
 function App() {
   return (
     <div>
-      <Modal visible={true} width={1340} className="m-modal">
-        <OtherInfo></OtherInfo>
+      <Modal visible={true} width={1340}>
+        <div id="m-modal">
+          <OtherInfo></OtherInfo>
+        </div>
       </Modal>
     </div>
   );

@@ -4,6 +4,16 @@ import { validatorKey } from "./utils";
 
 const { Option, OptGroup } = Select;
 
+function createOption(opt, comIndex) {
+  if (Object.prototype.toString.call(opt) !== "[object Object]") return null;
+  const { id, label, value } = opt;
+  return (
+    <Option key={validatorKey(id, comIndex)} value={value}>
+      {label}
+    </Option>
+  );
+}
+
 function createFormItemContent(_props) {
   const {
     _type,
@@ -12,21 +22,13 @@ function createFormItemContent(_props) {
   const children = options ? (
     group ? (
       <OptGroup label={group}>
-        {options.map(({ id, label, value }, comIndex) => {
-          return (
-            <Option key={validatorKey(id, comIndex)} value={value}>
-              {label}
-            </Option>
-          );
+        {options.map((opt, comIndex) => {
+          return createOption(opt, comIndex);
         })}
       </OptGroup>
     ) : (
-      options.map(({ id, label, value }, comIndex) => {
-        return (
-          <Option key={validatorKey(id, comIndex)} value={value}>
-            {label}
-          </Option>
-        );
+      options.map((opt, comIndex) => {
+        return createOption(opt, comIndex);
       })
     )
   ) : null;

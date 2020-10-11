@@ -22,7 +22,6 @@ var num = 0;
 
 function OtherInfo(props) {
   function change2({ cfgIndex }, value, element) {
-    console.log(cfgIndex);
     if (value === 2 || value === 3) {
       proxyConfig[cfgIndex].components = pc();
     } else {
@@ -56,7 +55,7 @@ function OtherInfo(props) {
         name: `${w}[]type`,
         element: {
           type: Select,
-          getPopupContainer: () => document.querySelector(".m-modal"),
+          $getPopupContainer: () => document.querySelector(".m-modal"),
           props: {
             onChange: w === "Info1" ? change2 : change1,
           },
@@ -112,7 +111,7 @@ function OtherInfo(props) {
         element: {
           type: Select,
           props: {
-            getPopupContainer: () => document.querySelector(".m-modal"),
+            $getPopupContainer: () => document.querySelector("#m-modal"),
             onChange: w === "Info1" ? change2 : change1,
           },
           options: [
@@ -158,7 +157,7 @@ function OtherInfo(props) {
   function cbf(num = 0) {
     return {
       id: `active${num}`,
-      divideIndex: 4,
+      divideIndex: 3,
       props: {
         style: {
           border: "1px dashed #aaa",
@@ -176,7 +175,7 @@ function OtherInfo(props) {
         },
         handleAddClick({ add }) {
           count++;
-          const components = createBeneficiaryConfig(num + 1);
+          const components = cbf(num + 1);
           add(components);
         },
         handleMinusClick({ minus }) {
@@ -210,6 +209,22 @@ function OtherInfo(props) {
           id: 3,
           label: "弟弟答案地址",
         },
+        {
+          id: 4,
+          label: "span",
+          type: function () {
+            useEffect(() => {
+              return () => {
+                console.log("un");
+              };
+            }, []);
+            return (
+              <div>
+                <em>em</em>
+              </div>
+            );
+          },
+        },
       ],
     };
   }
@@ -233,7 +248,10 @@ function OtherInfo(props) {
               children(props) {
                 return <em>em</em>;
               },
+              in: "aaaw",
               props: {
+                in: "w",
+                data_a: 123,
                 onClick(p, element) {
                   p.cfg.title = {
                     label: "法人信息",
@@ -310,7 +328,6 @@ function OtherInfo(props) {
   useEffect(() => {
     console.log("inited", inited);
   }, []);
-  console.log(<C>a</C>);
   return (
     <MForm {...{ config: proxyConfig, proxyConfig, inited, ...formLayout }} />
   );

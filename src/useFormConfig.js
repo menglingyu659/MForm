@@ -1,5 +1,5 @@
 import React from "react";
-import { polyfillProxy } from "./utils";
+import { createMark, polyfillProxy } from "./utils";
 
 const arrayProto = Array.prototype;
 const objectProto = Object.prototype;
@@ -61,8 +61,14 @@ export class CreateConfig {
     return value;
   };
 
-  $set = ((that) => {
-    return function (prop, value) {
+  $delete = ((that) =>
+    function (prop) {
+      delete this[prop];
+      that.forceUpdate();
+    })(this);
+
+  $set = ((that) =>
+    function (prop, value) {
       if (window.Proxy) {
         this[prop] = value;
       } else {
@@ -74,29 +80,32 @@ export class CreateConfig {
         polyfillProxy(this, that.polyfillProxyCb);
         that.forceUpdate();
       }
-    };
-  })(this);
+    })(this);
 
-  overwriteObjectMethod = () => {
-    return Object.create(objectProto, {
+  //给对象和数组添加不可枚举的原型方法
+  addFunctionToProto = (proto) => {
+    return Object.create(proto, {
       $set: {
         value: this.$set,
+        enumerable: false,
+      },
+      $delete: {
+        value: this.$delete,
         enumerable: false,
       },
     });
   };
 
+  overwriteObjectMethod = () => {
+    return this.addFunctionToProto(objectProto);
+  };
+
   overwriteArrayMethod = () => {
-    const createArrayProto = Object.create(arrayProto, {
-      $set: {
-        value: this.$set,
-        enumerable: false,
-      },
-    });
+    const createArrayProto = this.addFunctionToProto(arrayProto);
     if (!window.Proxy) {
       methodsToPatch.forEach((method) => {
         const that = this;
-        this.createMark(createArrayProto, method, function (...args) {
+        createMark(createArrayProto, method, function (...args) {
           let insertData = [];
           switch (method) {
             case "push":
@@ -126,13 +135,6 @@ export class CreateConfig {
     return createArrayProto;
   };
 
-  createMark = (originObjorArr, key = "__m__", values = {}) => {
-    Object.defineProperty(originObjorArr, key, {
-      value: values,
-      enumerable: false,
-    });
-  };
-
   // overwriteMethods = (originOnFunction, configIndex, ownIndex) => {
   //   return function(...args) {
   //     return originOnFunction.apply(this, [...args, configIndex, ownIndex]);
@@ -150,7 +152,7 @@ export class CreateConfig {
   //       if (Object.prototype.toString.call(config) === "[object Object]") {
   //         Object.setPrototypeOf(config, this.createObjectProto);
   //       }
-  //       this.createMark(config, "__m__", {
+  //       createMark(config, "__m__", {
   //         // configIndex,
   //         // ownIndex,
   //         $cfg: "cid",
@@ -174,7 +176,7 @@ export class CreateConfig {
       if (Object.prototype.toString.call(config) === "[object Object]") {
         Object.setPrototypeOf(config, this.createObjectProto);
       }
-      this.createMark(config, "__m__", { $cfg: "cid", originProps: {} });
+      createMark(config, "__m__", { $cfg: "cid", originProps: {} });
     }
     for (const cfg in config) {
       const every = config[cfg];
@@ -188,7 +190,7 @@ export class CreateConfig {
       config[index] = this.pxying(item);
     });
     if (!config.__m__) {
-      this.createMark(config, "__m__", { $cfg: "root", originProps: {} });
+      createMark(config, "__m__", { $cfg: "root", originProps: {} });
       Object.setPrototypeOf(config, this.createArrayProto);
     }
     return polyfillProxy(config, this.polyfillProxyCb);

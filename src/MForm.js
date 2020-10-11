@@ -62,6 +62,11 @@ function _MForm(props, ref) {
               {...{ ...formRowProps, ...rowProps }}
             >
               {components.map((innerProps, componentIndex) => {
+                if (
+                  Object.prototype.toString.call(innerProps) !==
+                  "[object Object]"
+                )
+                  return null;
                 const {
                   id,
                   label,
