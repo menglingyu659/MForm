@@ -105,6 +105,11 @@ function cfgDecorator(cfg, par, key) {
       //处理原生js事件
       const newVla = overwriteMethod(value, par);
       cfg[prop] = cfgDeal(cfg, prop, value, newVla);
+    } else if (/^\$(.*)/.test(prop)) {
+      //处理第三方函数
+      const _prop = RegExp.$1;
+      cfg[_prop] = cfgDeal(cfg, prop, value, value);
+      delete cfg[prop];
     } else if (typeof value === "object") {
       //递归对象
       cfgDecorator(
@@ -112,11 +117,6 @@ function cfgDecorator(cfg, par, key) {
         par,
         prop === "components" ? "components" : undefined
       );
-    } else if (/^\$(.*)/.test(prop)) {
-      //处理第三方函数
-      const _prop = RegExp.$1;
-      cfg[_prop] = cfgDeal(cfg, prop, value, value);
-      delete cfg[prop];
     }
   }
   return cfg;
