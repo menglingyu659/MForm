@@ -205,6 +205,10 @@ function OtherInfo(props) {
           label: "弟弟答案证件有效期",
           element: {
             type: DatePicker,
+            render() {
+              return <Input></Input>;
+            },
+            disabled: true,
           },
         },
         {

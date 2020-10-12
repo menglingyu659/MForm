@@ -33,7 +33,14 @@ function createFormItemContent(_props) {
     )
   ) : null;
   const Com = type || _type || Input;
-  return render || <Com children={children} {...elementProps} {...props}></Com>;
+  return render ? (
+    React.cloneElement(render, {
+      ...elementProps,
+      ...props,
+    })
+  ) : (
+    <Com children={children} {...elementProps} {...props}></Com>
+  );
 }
 
 export { createFormItemContent };

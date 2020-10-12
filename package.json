@@ -1,6 +1,6 @@
 {
   "name": "mconfigform",
-  "version": "1.0.17",
+  "version": "1.0.18",
   "description": "this is a form package",
   "main": "lib/index.js",
   "directories": {

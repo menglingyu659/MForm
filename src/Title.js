@@ -26,7 +26,12 @@ function Title(_props) {
     <span className="m-title">
       {title ? (
         typeof title === "object" ? (
-          render || (
+          render ? (
+            React.cloneElement(render, {
+              ...titleProps,
+              ...props,
+            })
+          ) : (
             <Text strong {...titleProps} {...props}>
               {label}
             </Text>

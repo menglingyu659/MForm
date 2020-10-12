@@ -92,35 +92,36 @@ function _MForm(props, ref) {
                     ...elementProps,
                   },
                 };
-                return (
-                  render || (
-                    <Col
-                      key={validatorKey(id, componentIndex)}
-                      {...{ ...formCol, ...col, ...itemCol }}
-                      {...{ ...formColProps, ...colProps, ...itemColProps }}
+                return render ? (
+                  React.cloneElement(render, {
+                    ...antdSetting,
+                    ...props,
+                  })
+                ) : (
+                  <Col
+                    key={validatorKey(id, componentIndex)}
+                    {...{ ...formCol, ...col, ...itemCol }}
+                    {...{ ...formColProps, ...colProps, ...itemColProps }}
+                  >
+                    <FormItem
+                      label={label}
+                      {...formItemLayout}
+                      {...antdSetting}
+                      {...props}
                     >
-                      <FormItem
-                        label={label}
-                        {...formItemLayout}
-                        {...antdSetting}
-                        {...props}
-                      >
-                        {name
-                          ? form.getFieldDecorator(name, {
-                              rules: [
-                                { required, message: `${label}不能为空` },
-                              ],
-                              ...getFieldDecoratorOptions,
-                            })(
-                              createFormItemContent({
-                                element: _element,
-                                _type,
-                              })
-                            )
-                          : createFormItemContent({ element: _element, _type })}
-                      </FormItem>
-                    </Col>
-                  )
+                      {name
+                        ? form.getFieldDecorator(name, {
+                            rules: [{ required, message: `${label}不能为空` }],
+                            ...getFieldDecoratorOptions,
+                          })(
+                            createFormItemContent({
+                              element: _element,
+                              _type,
+                            })
+                          )
+                        : createFormItemContent({ element: _element, _type })}
+                    </FormItem>
+                  </Col>
                 );
               })}
             </Row>
