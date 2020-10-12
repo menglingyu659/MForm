@@ -109,7 +109,9 @@ function OtherInfo(props) {
           initialValue: 2,
         },
         element: {
-          type: Select,
+          type: React.forwardRef((props, ref) => (
+            <Select {...props} ref={ref}></Select>
+          )),
           props: {
             $getPopupContainer: () => document.querySelector("#m-modal"),
             onChange: w === "Info1" ? change2 : change1,

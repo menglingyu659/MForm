@@ -114,7 +114,7 @@ function cfgDecorator(cfg, par, key) {
       const _value = cfgDeal(cfg, prop, value, value);
       cfg.$set(_prop, _value);
       delete cfg[prop];
-    } else if (typeof value === "object") {
+    } else if (typeof value === "object" && prop !== "type") {
       //递归对象
       cfgDecorator(
         value,

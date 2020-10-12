@@ -1,6 +1,10 @@
 import React from "react";
-import { Modal } from "antd";
+import { Input, Modal, Select } from "antd";
 import OtherInfo from "./OtherInfo";
+
+function C() {
+  return <input type="text" />;
+}
 
 function App() {
   return (

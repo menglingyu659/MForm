@@ -183,8 +183,10 @@ export class CreateConfig {
       createMark(config, "__m__", { $cfg: "cid", originProps: {} });
     }
     for (const cfg in config) {
-      const every = config[cfg];
-      config[cfg] = this.pxying(every);
+      if (cfg !== "type") {
+        const every = config[cfg];
+        config[cfg] = this.pxying(every);
+      }
     }
     return polyfillProxy(config, this.polyfillProxyCb);
   };
