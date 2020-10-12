@@ -20,7 +20,7 @@ function _MForm(props, ref) {
   } = props;
   const [, forceUpdata] = useState(null);
   const [initedConfig, setting] = useFormConfig(config, inited, { form });
-  const innerHooks = setting.getInnerHooks("menglingyu_innerHooks");
+  const innerHooks = setting.getInnerHooks("mmmmmmmm_innerHooks");
   useImperativeHandle(ref, () => [initedConfig, setting]);
   configDecorator(initedConfig);
   useLayoutEffect(() => {

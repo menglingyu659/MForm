@@ -55,7 +55,7 @@ function OtherInfo(props) {
         name: `${w}[]type`,
         element: {
           type: Select,
-          $getPopupContainer: () => document.querySelector(".m-modal"),
+          $getPopupContainer: () => document.querySelector("#m-modal"),
           props: {
             onChange: w === "Info1" ? change2 : change1,
           },
@@ -254,9 +254,10 @@ function OtherInfo(props) {
                 data_a: 123,
                 onClick(p, element) {
                   p.cfg.title = {
-                    label: "法人信息",
+                    label: ({ cfgIndex }) => "f人信息" + cfgIndex,
                     onClick(p) {
-                      console.log((p.cfg.title = "w"));
+                      p.cfg.title.$set("label", "w");
+                      // console.log((p.cfg.title.label = "w"));
                     },
                   };
                   console.log(p);

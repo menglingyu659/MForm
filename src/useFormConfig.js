@@ -72,8 +72,12 @@ export class CreateConfig {
       if (window.Proxy) {
         this[prop] = value;
       } else {
+        if (value.mark === "mmm_init") {
+          this[prop] = value.value;
+          return;
+        }
         if (this.__m__.originProps[prop] && value.mark !== "mmm_init") {
-          this.__m__.originProps[prop] = undefined;
+          this.__m__.originProps[prop] = value;
         }
         value = that.pxying(value);
         this[prop] = value;
@@ -204,7 +208,7 @@ export class CreateConfig {
   };
 
   getInnerHooks = (type) => {
-    if (type !== "menglingyu_innerHooks") return console.error("innerHooks");
+    if (type !== "mmmmmmmm_innerHooks") return console.error("innerHooks");
     return {
       setRegister: this.setRegister,
       add: this.add,

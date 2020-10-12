@@ -58,7 +58,7 @@ function webkit(config, callback) {
     set: (target, prop, value) => {
       if (target.__m__.originProps[prop] && value.mark !== "mmm_init") {
         //IE写在$set方法中
-        target.__m__.originProps[prop] = undefined;
+        target.__m__.originProps[prop] = value;
       }
       Reflect.set(target, prop, callback(value));
       return true;
@@ -92,7 +92,10 @@ function cfgDecorator(cfg, par, key) {
   for (const prop in cfg) {
     if (key === "components")
       par = { ...par, cmpt: cfg[prop], cmptIndex: prop };
-    const value = cfg.__m__.originProps[prop] || cfg[prop];
+    const value =
+      cfg.__m__.originProps[prop] === undefined
+        ? cfg[prop]
+        : cfg.__m__.originProps[prop];
     if (
       //处理动态绑定，children,render情况
       typeof value === "function" &&
@@ -108,7 +111,8 @@ function cfgDecorator(cfg, par, key) {
     } else if (/^\$(.*)/.test(prop)) {
       //处理第三方函数
       const _prop = RegExp.$1;
-      cfg[_prop] = cfgDeal(cfg, prop, value, value);
+      const _value = cfgDeal(cfg, prop, value, value);
+      cfg.$set(_prop, _value);
       delete cfg[prop];
     } else if (typeof value === "object") {
       //递归对象
