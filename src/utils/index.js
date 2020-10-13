@@ -4,7 +4,6 @@
 //   const reg = /^(on|handle).*/;
 //   for (const prop in newMethods) {
 //     const item = newMethods[prop];
-//     console.log(item.name, "item.name");
 
 //     if (typeof item === "function" && reg.test(item.name)) {
 //       newMethods[prop] = function (...args) {
