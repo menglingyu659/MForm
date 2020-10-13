@@ -5,6 +5,7 @@ import MForm, { useFormConfig } from "../src";
 // import MForm, { useFormConfig } from "mconfigform";
 import { useEffect } from "react";
 import { useMemo } from "react";
+import moment from "moment";
 
 const formLayout = {
   labelCol: {
@@ -21,6 +22,7 @@ let count = 1;
 var num = 0;
 
 function OtherInfo(props) {
+  const { listData = {} } = props;
   function change2({ cfgIndex }, value, element) {
     if (value === 2 || value === 3) {
       proxyConfig[cfgIndex].components = pc();
@@ -262,8 +264,8 @@ function OtherInfo(props) {
                   p.cfg.title = {
                     label: ({ cfgIndex }) => "f人信息" + cfgIndex,
                     onClick(p) {
-                      p.cfg.title.$set("label", "w");
-                      // console.log((p.cfg.title.label = "w"));
+                      // p.cfg.title.$set("label", "w");
+                      console.log((p.cfg.title.label = "w"));
                     },
                   };
                   console.log(p);
@@ -298,6 +300,9 @@ function OtherInfo(props) {
             name: "wowoIdExpiryDate",
             element: {
               type: DatePicker,
+            },
+            getFieldDecoratorOptions: {
+              $initialValue: moment(listData.legalPersonId),
             },
           },
         ],

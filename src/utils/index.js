@@ -43,7 +43,7 @@ function IEProxy(config, callback) {
         return value;
       },
       set(newValue) {
-        value = callback(newValue);
+        value = callback(newValue, cfg, config);
       },
     });
   }
@@ -56,18 +56,14 @@ function webkit(config, callback) {
       return Reflect.get(target, prop);
     },
     set: (target, prop, value) => {
-      if (target.__m__.originProps[prop] && value.mark !== "mmm_init") {
-        //IE写在$set方法中
-        target.__m__.originProps[prop] = value;
-      }
-      Reflect.set(target, prop, callback(value));
+      Reflect.set(target, prop, callback(value, prop, target));
       return true;
     },
   });
 }
 
 export function polyfillProxy(config, callback) {
-  if (typeof config !== "object") return config;
+  if (typeof config !== "object" || config === null) return config;
   let initedConfig;
   if (window.Proxy) {
     initedConfig = webkit(config, callback);
@@ -92,15 +88,14 @@ function cfgDecorator(cfg, par, key) {
   for (const prop in cfg) {
     if (key === "components")
       par = { ...par, cmpt: cfg[prop], cmptIndex: prop };
-    const value =
-      cfg.__m__.originProps[prop] === undefined
-        ? cfg[prop]
-        : cfg.__m__.originProps[prop];
+    const value = cfg.__m__.originProps.hasOwnProperty(prop)
+      ? cfg.__m__.originProps[prop]
+      : cfg[prop];
     if (
       //处理动态绑定，children,render情况
       typeof value === "function" &&
       !/^(on|type|handle|\$).*/.test(prop) &&
-      !cfg.__m__.originProps[`$${prop}`]
+      !cfg.__m__.originProps.hasOwnProperty(`$${prop}`)
     ) {
       const newVla = value(par);
       cfg[prop] = cfgDeal(cfg, prop, value, newVla);
@@ -114,13 +109,9 @@ function cfgDecorator(cfg, par, key) {
       const _value = cfgDeal(cfg, prop, value, value);
       cfg.$set(_prop, _value);
       delete cfg[prop];
-    } else if (typeof value === "object" && prop !== "type") {
+    } else if (cfgControl(cfg, prop, value)) {
       //递归对象
-      cfgDecorator(
-        value,
-        par,
-        prop === "components" ? "components" : undefined
-      );
+      cfgDecorator(value, par, prop);
     }
   }
   return cfg;
@@ -145,4 +136,14 @@ export function createMark(originObjorArr, key = "__m__", values = {}) {
     value: values,
     enumerable: false,
   });
+}
+
+export function cfgControl(cfg, prop, value) {
+  return (
+    typeof value === "object" &&
+    value !== null &&
+    prop !== "type" &&
+    !/^\$.*/.test(prop) &&
+    !cfg.__m__.originProps.hasOwnProperty(`$${prop}`)
+  );
 }

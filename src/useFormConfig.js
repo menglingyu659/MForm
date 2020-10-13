@@ -1,5 +1,5 @@
 import React from "react";
-import { createMark, polyfillProxy } from "./utils";
+import { createMark, polyfillProxy, cfgControl } from "./utils";
 
 const arrayProto = Array.prototype;
 const objectProto = Object.prototype;
@@ -53,9 +53,15 @@ export class CreateConfig {
   //     });
   //   }
   // };
-  polyfillProxyCb = (value) => {
+  polyfillProxyCb = (value, prop, cfg) => {
     if (value.mark === "mmm_init") return value.value;
-    if (typeof value === "object" && !value.hasOwnProperty("__m__"))
+    if (cfg.__m__.originProps.hasOwnProperty(prop)) {
+      cfg.__m__.originProps[prop] = value;
+    }
+    if (cfg.__m__.originProps.hasOwnProperty(`$${prop}`)) {
+      cfg.__m__.originProps[`$${prop}`] = value;
+    }
+    if (cfgControl(cfg, prop, value) && !value.hasOwnProperty("__m__"))
       value = this.pxying(value);
     this.forceUpdate();
     return value;
@@ -72,17 +78,8 @@ export class CreateConfig {
       if (window.Proxy) {
         this[prop] = value;
       } else {
-        if (value.mark === "mmm_init") {
-          this[prop] = value.value;
-          return;
-        }
-        if (this.__m__.originProps[prop] && value.mark !== "mmm_init") {
-          this.__m__.originProps[prop] = value;
-        }
-        value = that.pxying(value);
-        this[prop] = value;
+        this[prop] = that.polyfillProxyCb(value, prop, this);
         polyfillProxy(this, that.polyfillProxyCb);
-        that.forceUpdate();
       }
     })(this);
 
@@ -173,7 +170,7 @@ export class CreateConfig {
   //   return innerPxying;
   // };
   pxying = (config) => {
-    if (typeof config !== "object") return config;
+    if (typeof config !== "object" || config === null) return config;
     if (!config.__m__) {
       if (Array.isArray(config))
         Object.setPrototypeOf(config, this.createArrayProto);
@@ -183,7 +180,7 @@ export class CreateConfig {
       createMark(config, "__m__", { $cfg: "cid", originProps: {} });
     }
     for (const cfg in config) {
-      if (cfg !== "type") {
+      if (cfg !== "type" && !/^\$.*/.test(cfg)) {
         const every = config[cfg];
         config[cfg] = this.pxying(every);
       }
