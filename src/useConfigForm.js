@@ -229,7 +229,7 @@ function insertFormObject(inserter = {}, beInsert) {
   return beInsert;
 }
 
-function useFormConfig(config, depend, inited, inserter) {
+function useConfigForm(config, depend, inited, inserter) {
   if (
     Object.prototype.toString.call(inited) === "[object Object]" &&
     inited.mmm_mark === "MMMM_INNER"
@@ -246,4 +246,4 @@ function useFormConfig(config, depend, inited, inserter) {
   }, depend);
 }
 
-export { useFormConfig };
+export { useConfigForm };

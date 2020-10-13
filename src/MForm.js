@@ -1,7 +1,7 @@
 import React, { useState, useLayoutEffect, useImperativeHandle } from "react";
 import { Col, Form, Row } from "antd";
 import { createFormItemContent } from "./createFormItemContent";
-import { useFormConfig } from "./useFormConfig";
+import { useConfigForm } from "./useConfigForm";
 import { configDecorator, validatorKey } from "./utils";
 import Title from "./Title";
 
@@ -20,7 +20,7 @@ function _MForm(props, ref) {
     ...newProps
   } = props;
   const [, forceUpdata] = useState(null);
-  const [initedConfig, setting] = useFormConfig(config, depend, inited, {
+  const [initedConfig, setting] = useConfigForm(config, depend, inited, {
     form,
   });
   const innerHooks = setting.getInnerHooks("mmmmmmmm_innerHooks");

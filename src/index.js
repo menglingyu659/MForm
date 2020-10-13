@@ -1,6 +1,6 @@
 import MForm from "./MForm";
-import { useFormConfig } from "./useFormConfig";
+import { useConfigForm } from "./useConfigForm";
 
-MForm.useFormConfig = useFormConfig;
+MForm.useConfigForm = useConfigForm;
 export default MForm;
-export { useFormConfig };
+export { useConfigForm };

@@ -1,8 +1,8 @@
 import React from "react";
 import { DatePicker, Input, Select } from "antd";
-// import MForm, { useFormConfig } from "../lib";
-import MForm, { useFormConfig } from "../src";
-// import MForm, { useFormConfig } from "mconfigform";
+// import MForm, { useConfigForm } from "../lib";
+import MForm, { useConfigForm } from "../src";
+// import MForm, { useConfigForm } from "mconfigform";
 import { useEffect } from "react";
 import { useMemo } from "react";
 import moment from "moment";
@@ -335,7 +335,7 @@ function OtherInfo(props) {
     cbf(),
   ];
   console.log("1", config[0].__m__);
-  const [proxyConfig, inited] = useFormConfig(config, [f]);
+  const [proxyConfig, inited] = useConfigForm(config, [f]);
   useEffect(() => {
     console.log("inited", inited);
   }, []);
