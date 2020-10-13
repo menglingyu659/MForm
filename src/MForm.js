@@ -33,7 +33,7 @@ function _MForm(props, ref) {
     return () => {
       unlisten();
     };
-  }, []);
+  }, [config]);
   return (
     <Form {...newProps}>
       {initedConfig.map((p, configIndex) => {

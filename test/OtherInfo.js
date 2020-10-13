@@ -334,8 +334,8 @@ function OtherInfo(props) {
     },
     cbf(),
   ];
-  const [proxyConfig, inited] = useFormConfig(config, [{}]);
-  console.log("1", config);
+  console.log("1", config[0].__m__);
+  const [proxyConfig, inited] = useFormConfig(config, [f]);
   useEffect(() => {
     console.log("inited", inited);
   }, []);

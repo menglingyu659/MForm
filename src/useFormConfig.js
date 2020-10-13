@@ -63,6 +63,7 @@ export class CreateConfig {
     }
     if (cfgControl(cfg, prop, value) && !value.hasOwnProperty("__m__"))
       value = this.pxying(value);
+    console.log(value);
     this.forceUpdate();
     return value;
   };
