@@ -6,6 +6,7 @@ import MForm, { useFormConfig } from "../src";
 import { useEffect } from "react";
 import { useMemo } from "react";
 import moment from "moment";
+import { useState } from "react";
 
 const formLayout = {
   labelCol: {
@@ -23,6 +24,7 @@ var num = 0;
 
 function OtherInfo(props) {
   const { listData = {} } = props;
+  const [f, force] = useState([]);
   function change2({ cfgIndex }, value, element) {
     if (value === 2 || value === 3) {
       proxyConfig[cfgIndex].components = pc();
@@ -237,111 +239,117 @@ function OtherInfo(props) {
     };
   }
 
-  let config = useMemo(
-    () => [
-      {
-        id: 0,
-        title: "a",
-        col: {
-          span: 8,
-        },
-        l: "",
-        components: [
-          {
-            id: 0,
-            label: "窝窝名称",
-            name: "wowoName",
-            element: {
-              type: "span",
-              children(props) {
-                return <em>em</em>;
-              },
-              in: "aaaw",
-              props: {
-                in: "w",
-                data_a: 123,
-                onClick(p, element) {
-                  p.cfg.title = {
-                    label: ({ cfgIndex }) => "f人信息" + cfgIndex,
-                    onClick(p) {
-                      // p.cfg.title.$set("label", "w");
-                      console.log((p.cfg.title.label = "w"));
-                    },
-                  };
-                  console.log(p);
-                  // num++;
-                  // console.log(num);
-                  // proxyConfig[cfgIndex].l = "3";
-                  // if (num === 3) {
-                  //   proxyConfig[cfgIndex].components[0].$set("label", "3");
-                  // }
-                  // proxyConfig[cfgIndex].$set("p", { arr: [{ a: "a" }] });
-                  // proxyConfig[cfgIndex].p = { arr: [{ a: "a" }] };
-                },
-                className: "spanm",
-              },
-            },
-          },
-          {
-            id: 1,
-            label: "窝窝证件号码",
-            name: "wowoId",
+  let config = [
+    {
+      id: 0,
+      title: "a",
+      col: {
+        span: 8,
+      },
+      l: "",
+      components: [
+        {
+          id: 0,
+          label: "窝窝名称",
+          name: "wowoName",
+          element: {
             type: "span",
-            element: {
-              children() {
-                return "w";
+            children(props) {
+              return <em>em</em>;
+            },
+            in: "aaaw",
+            props: {
+              in: "w",
+              data_a: 123,
+              onClick(p, element) {
+                p.cfg.title = {
+                  label: ({ cfgIndex }) => "f人信息" + cfgIndex,
+                  onClick(p) {
+                    // p.cfg.title.$set("label", "w");
+                    console.log((p.cfg.title.label = "w"));
+                  },
+                };
+                console.log(p);
+                // num++;
+                // console.log(num);
+                // proxyConfig[cfgIndex].l = "3";
+                // if (num === 3) {
+                //   proxyConfig[cfgIndex].components[0].$set("label", "3");
+                // }
+                // proxyConfig[cfgIndex].$set("p", { arr: [{ a: "a" }] });
+                // proxyConfig[cfgIndex].p = { arr: [{ a: "a" }] };
               },
-            },
-            required: false,
-          },
-          {
-            id: 2,
-            label: "窝窝证件有效日期",
-            name: "wowoIdExpiryDate",
-            element: {
-              type: DatePicker,
-            },
-            getFieldDecoratorOptions: {
-              $initialValue: moment(listData.legalPersonId),
+              className: "spanm",
             },
           },
-        ],
-      },
-      {
-        id: 1,
-        title: "十信息",
-        col: {
-          span: 8,
         },
-        components: pc(),
-      },
-      {
-        id: 3,
-        title: "kk信息",
-        col: {
-          span: 8,
+        {
+          id: 1,
+          label: "窝窝证件号码",
+          name: "wowoId",
+          type: "span",
+          element: {
+            children() {
+              return "w";
+            },
+          },
+          required: false,
         },
-        components: pc("info2", {
-          type: "kk",
-          name: "kk姓名",
-          id: "kk证件号码",
-          idExpiryDate: "kk证件有效期",
-          capitalAmount: "出资金额（元）",
-          capitalRatio: "出资占比（%）",
-          isMrgRpt: "是否合并报表",
-        }),
+        {
+          id: 2,
+          label: "窝窝证件有效日期",
+          name: "wowoIdExpiryDate",
+          element: {
+            type: DatePicker,
+          },
+          getFieldDecoratorOptions: {
+            $initialValue: moment(listData.legalPersonId),
+          },
+        },
+      ],
+    },
+    {
+      id: 1,
+      title: "十信息",
+      col: {
+        span: 8,
       },
-      cbf(),
-    ],
-    [num]
-  );
-  const [proxyConfig, inited] = useFormConfig(config);
-  console.log("1", inited);
+      components: pc(),
+    },
+    {
+      id: 3,
+      title: "kk信息",
+      col: {
+        span: 8,
+      },
+      components: pc("info2", {
+        type: "kk",
+        name: "kk姓名",
+        id: "kk证件号码",
+        idExpiryDate: "kk证件有效期",
+        capitalAmount: "出资金额（元）",
+        capitalRatio: "出资占比（%）",
+        isMrgRpt: "是否合并报表",
+      }),
+    },
+    cbf(),
+  ];
+  const [proxyConfig, inited] = useFormConfig(config, [{}]);
+  console.log("1", config);
   useEffect(() => {
     console.log("inited", inited);
   }, []);
   return (
-    <MForm {...{ config: proxyConfig, proxyConfig, inited, ...formLayout }} />
+    <div>
+      <div
+        onClick={() => {
+          force({});
+        }}
+      >
+        div
+      </div>
+      <MForm {...{ config: proxyConfig, proxyConfig, inited, ...formLayout }} />
+    </div>
   );
 }
 export default OtherInfo;

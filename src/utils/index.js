@@ -136,6 +136,7 @@ export function createMark(originObjorArr, key = "__m__", values = {}) {
     value: values,
     enumerable: false,
   });
+  return originObjorArr;
 }
 
 export function cfgControl(cfg, prop, value) {

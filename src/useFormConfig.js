@@ -216,7 +216,9 @@ export class CreateConfig {
   };
 
   getConfig = () => {
-    return [this.proxyConfig, { getInnerHooks: this.getInnerHooks }];
+    const inited = { getInnerHooks: this.getInnerHooks };
+    createMark(inited.__proto__, "mmm_mark", "MMMM_INNER");
+    return [this.proxyConfig, inited];
   };
 }
 
@@ -227,19 +229,21 @@ function insertFormObject(inserter = {}, beInsert) {
   return beInsert;
 }
 
-function useFormConfig(config, inited, inserter) {
-  const configRef = React.useRef();
-  if (!configRef.current) {
-    if (inited && inserter) {
+function useFormConfig(config, depend, inited, inserter) {
+  if (
+    Object.prototype.toString.call(inited) === "[object Object]" &&
+    inited.mmm_mark === "MMMM_INNER"
+  ) {
+    return React.useMemo(() => {
       const _target = insertFormObject(inserter, inited);
-      configRef.current = [config, _target];
-    } else {
-      const [proxyConfig, inited] = new CreateConfig(config).getConfig();
-      const _target = insertFormObject(inserter, inited);
-      configRef.current = [proxyConfig, _target];
-    }
+      return [config, _target];
+    }, [config, inited]);
   }
-  return configRef.current;
+  return React.useMemo(() => {
+    const [proxyConfig, inited] = new CreateConfig(config).getConfig();
+    const _target = insertFormObject(inserter, inited);
+    return [proxyConfig, _target];
+  }, depend);
 }
 
 export { useFormConfig };

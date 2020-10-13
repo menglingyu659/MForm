@@ -11,6 +11,7 @@ function _MForm(props, ref) {
   const {
     config = [],
     inited,
+    depend,
     form,
     proxyConfig,
     element: { props: formElementProps, ...formElement } = {},
@@ -19,7 +20,9 @@ function _MForm(props, ref) {
     ...newProps
   } = props;
   const [, forceUpdata] = useState(null);
-  const [initedConfig, setting] = useFormConfig(config, inited, { form });
+  const [initedConfig, setting] = useFormConfig(config, depend, inited, {
+    form,
+  });
   const innerHooks = setting.getInnerHooks("mmmmmmmm_innerHooks");
   useImperativeHandle(ref, () => [initedConfig, setting]);
   configDecorator(initedConfig);
