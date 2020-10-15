@@ -1,8 +1,13 @@
-import React, { useState, useLayoutEffect, useImperativeHandle } from "react";
+import React, {
+  useState,
+  useLayoutEffect,
+  useImperativeHandle,
+  useMemo,
+} from "react";
 import { Col, Form, Row } from "antd";
 import { createFormItemContent } from "./createFormItemContent";
 import { useConfigForm } from "./useConfigForm";
-import { configDecorator, validatorKey } from "./utils";
+import { dealData, validatorKey } from "./utils";
 import Title from "./Title";
 
 const FormItem = Form.Item;
@@ -20,20 +25,29 @@ function _MForm(props, ref) {
     ...newProps
   } = props;
   const [, forceUpdata] = useState(null);
+  const _forceUpdata = () => forceUpdata({});
   const [initedConfig, setting] = useConfigForm(config, depend, inited, {
     form,
   });
   const innerHooks = setting.getInnerHooks("mmmmmmmm_innerHooks");
-  useImperativeHandle(ref, () => [initedConfig, setting]);
-  configDecorator(initedConfig);
+  useImperativeHandle(ref, () => [initedConfig, setting], [
+    initedConfig,
+    setting,
+  ]);
+  // const willDealData = useMemo(() => {
+  //   const willDealData = configDecorator(initedConfig, _forceUpdata);
+  //   innerHooks.setWillDealData(willDealData);
+  //   return willDealData;
+  // }, [initedConfig]);
+  console.log(innerHooks.getWillDealData());
+  dealData(innerHooks.getWillDealData());
+  console.log(initedConfig);
   useLayoutEffect(() => {
-    const unlisten = innerHooks.setRegister(() => {
-      forceUpdata({});
-    });
+    const unlisten = innerHooks.setRegister(_forceUpdata);
     return () => {
       unlisten();
     };
-  }, [config]);
+  }, []);
   return (
     <Form {...newProps}>
       {initedConfig.map((p, configIndex) => {
@@ -41,6 +55,8 @@ function _MForm(props, ref) {
           return null;
         const {
           id,
+          value,
+          key,
           title,
           components,
           divideIndex,
@@ -55,7 +71,7 @@ function _MForm(props, ref) {
         return (
           <div
             className="m-box"
-            key={validatorKey(id, configIndex)}
+            key={validatorKey([value, id, key], configIndex)}
             {...boxSetting}
             {...boxProps}
           >
@@ -72,6 +88,8 @@ function _MForm(props, ref) {
                   return null;
                 const {
                   id,
+                  value,
+                  key,
                   label,
                   name,
                   required = true,
@@ -102,7 +120,7 @@ function _MForm(props, ref) {
                   })
                 ) : (
                   <Col
-                    key={validatorKey(id, componentIndex)}
+                    key={validatorKey([value, id, key], componentIndex)}
                     {...{ ...formCol, ...col, ...itemCol }}
                     {...{ ...formColProps, ...colProps, ...itemColProps }}
                   >

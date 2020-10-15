@@ -25,7 +25,7 @@ var num = 0;
 function OtherInfo(props) {
   const { listData = {} } = props;
   const [f, force] = useState([]);
-  function change2({ cfgIndex }, value, element) {
+  function change2({ cfgProps: { cfgIndex } }, value, element) {
     if (value === 2 || value === 3) {
       proxyConfig[cfgIndex].components = pc();
     } else {
@@ -33,7 +33,11 @@ function OtherInfo(props) {
     }
   }
 
-  function change1({ cfgIndex }, value, element) {
+  function change1(m, value, element) {
+    const {
+      cfgProps: { cfgIndex },
+    } = m;
+    console.log(m);
     if (value === 2 || value === 3) {
       proxyConfig[cfgIndex].components = pc("info2", {
         type: "kk",
@@ -172,8 +176,8 @@ function OtherInfo(props) {
         },
       },
       title: {
-        label: ({ ownIndex }) => `弟弟答案${ownIndex + 1}`,
-        isShowAdd({ ownIndex }) {
+        label: ({ cfgProps: { ownIndex } }) => `弟弟答案${ownIndex + 1}`,
+        isShowAdd({ cfgProps: { ownIndex } }) {
           return count === ownIndex + 1;
         },
         isShowMinus() {
@@ -255,6 +259,7 @@ function OtherInfo(props) {
           element: {
             type: "span",
             children(props) {
+              console.log(props);
               return <em>em</em>;
             },
             in: "aaaw",
@@ -262,11 +267,14 @@ function OtherInfo(props) {
               in: "w",
               data_a: 123,
               onClick(p, element) {
-                p.cfg.title = {
-                  label: ({ cfgIndex }) => "f人信息" + cfgIndex,
+                p.cfgProps.cfg.title = {
+                  label: (x) => {
+                    console.log(x);
+                    return "f人信息";
+                  },
                   onClick(p) {
                     // p.cfg.title.$set("label", "w");
-                    console.log((p.cfg.title.label = "w"));
+                    console.log((p.cfgProps.cfg.title.label = "w"));
                   },
                 };
                 console.log(p);

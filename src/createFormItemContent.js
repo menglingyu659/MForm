@@ -6,10 +6,13 @@ const { Option, OptGroup } = Select;
 
 function createOption(opt, comIndex) {
   if (Object.prototype.toString.call(opt) !== "[object Object]") return null;
-  const { id, label, value } = opt;
+  const { id, label, value, key, name } = opt;
   return (
-    <Option key={validatorKey(id, comIndex)} value={value}>
-      {label}
+    <Option
+      key={validatorKey([value, id, key], comIndex)}
+      value={validatorKey([id, key, value], undefined)}
+    >
+      {validatorKey([name, label], undefined)}
     </Option>
   );
 }
