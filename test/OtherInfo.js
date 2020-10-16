@@ -63,7 +63,6 @@ function OtherInfo(props) {
         name: `${w}[]type`,
         element: {
           type: Select,
-          $getPopupContainer: () => document.querySelector("#m-modal"),
           props: {
             onChange: w === "Info1" ? change2 : change1,
           },
@@ -90,6 +89,11 @@ function OtherInfo(props) {
         id: 1,
         label: name,
         name: `${w}[]name`,
+        element: {
+          onClick(a) {
+            console.log(a);
+          },
+        },
       },
       {
         id: 2,
@@ -113,15 +117,11 @@ function OtherInfo(props) {
         id: 0,
         label: type,
         name: `${w}[]type`,
-        getFieldDecoratorOptions: {
-          initialValue: 2,
-        },
         element: {
           type: React.forwardRef((props, ref) => (
             <Select {...props} ref={ref}></Select>
           )),
           props: {
-            $getPopupContainer: () => document.querySelector("#m-modal"),
             onChange: w === "Info1" ? change2 : change1,
           },
           options: [
@@ -147,6 +147,11 @@ function OtherInfo(props) {
         id: 1,
         label: name,
         name: `${w}[]name`,
+        element: {
+          onClick(a) {
+            console.log(a);
+          },
+        },
       },
       {
         id: 2,
@@ -213,9 +218,6 @@ function OtherInfo(props) {
           label: "弟弟答案证件有效期",
           element: {
             type: DatePicker,
-            render() {
-              return <Input></Input>;
-            },
             disabled: true,
           },
         },
@@ -257,16 +259,13 @@ function OtherInfo(props) {
           label: "窝窝名称",
           name: "wowoName",
           element: {
-            type: "span",
-            children(props) {
-              console.log(props);
-              return <em>em</em>;
-            },
             in: "aaaw",
             props: {
               in: "w",
               data_a: 123,
               onClick(p, element) {
+                console.log(p);
+                // p.cfgProps.cfg.title = "999";
                 p.cfgProps.cfg.title = {
                   label: (x) => {
                     console.log(x);
@@ -277,7 +276,6 @@ function OtherInfo(props) {
                     console.log((p.cfgProps.cfg.title.label = "w"));
                   },
                 };
-                console.log(p);
                 // num++;
                 // console.log(num);
                 // proxyConfig[cfgIndex].l = "3";
@@ -296,11 +294,7 @@ function OtherInfo(props) {
           label: "窝窝证件号码",
           name: "wowoId",
           type: "span",
-          element: {
-            children() {
-              return "w";
-            },
-          },
+          element: {},
           required: false,
         },
         {
@@ -318,7 +312,9 @@ function OtherInfo(props) {
     },
     {
       id: 1,
-      title: "十信息",
+      title: {
+        label: "十信息",
+      },
       col: {
         span: 8,
       },

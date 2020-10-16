@@ -5,6 +5,10 @@ import {
   cfgControl,
   cfgDecorator,
   cfgIndexReset,
+  cfgDeal,
+  removeOriginDealData,
+  removeOriginDealDataRunner,
+  dealOriginProps,
 } from "./utils";
 
 const arrayProto = Array.prototype;
@@ -50,59 +54,23 @@ export class CreateConfig {
     };
   };
 
-  // createKey = (item, index) => {
-  //   for (const prop in item) {
-  //     if (Array.isArray(item[prop])) this.keying(item[prop]);
-  //   }
-  //   return `__m_${index}_m__`;
-  // };
-
-  // keying = (config) => {
-  //   if (Array.isArray(config)) {
-  //     config.forEach((item, index) => {
-  //       item.id = item.id || this.createKey(item, index);
-  //     });
-  //   }
-  // };
   polyfillProxyCb = (value, prop, cfg) => {
     if (value.mark === "mmm_init") return value.value;
-    if (cfg.__m__.propsIndexs.hasOwnProperty(`active$_m_$${prop}`)) {
-      const idx = cfg.__m__.propsIndexs[`active$_m_$${prop}`];
-      this.willDealData.active.splice(idx, 1);
-    }
-    let { originPar, $cfg } = cfg.__m__;
-    if ($cfg === "root" && value.hasOwnProperty("__m__")) {
-      const { divideIndex } = value;
-      const cfgIndex = Number(prop);
-      const ownIndex = divideIndex ? cfgIndex - divideIndex : undefined;
-      if (!Number.isNaN(cfgIndex)) {
-        value.__m__.originPar.cfgProps.cfgIndex = cfgIndex;
-        value.__m__.originPar.cfgProps.ownIndex = ownIndex;
+    const { originProps } = cfg.__m__;
+    if (cfg.hasOwnProperty(prop)) {
+      const oValue = cfg[prop];
+      if (cfgControl(cfg, prop, oValue) && value.hasOwnProperty("__m__")) {
+        removeOriginDealData(oValue, this.willDealData);
+      } else {
+        removeOriginDealDataRunner(cfg, prop, this.willDealData);
       }
     }
     if (cfgControl(cfg, prop, value) && !value.hasOwnProperty("__m__")) {
       value = this.pxying(value);
-      if (
-        $cfg === "root" &&
-        Object.prototype.toString.call(value) === "[object Object]"
-      ) {
-        const { divideIndex, components } = value;
-        const cfgIndex = Number(prop);
-        const ownIndex = divideIndex ? cfgIndex - divideIndex : undefined;
-        const cfgProps = {
-          cfgIndex,
-          ownIndex,
-          cfg,
-          divideIndex,
-        };
-        const _originPar = {
-          cfgProps,
-          forceUpdata: this.forceUpdate,
-          components,
-        };
-        originPar = _originPar;
-      }
-      cfgDecorator(value, prop, originPar, this.willDealData);
+      dealOriginProps(originProps, value, prop);
+      cfgDecorator(value, prop, originProps, this.willDealData);
+    } else {
+      cfgDeal(cfg, prop, value, originProps, this.willDealData);
     }
     this.forceUpdate();
     return value;
@@ -116,11 +84,15 @@ export class CreateConfig {
 
   $set = ((that) =>
     function (prop, value) {
-      if (window.Proxy) {
+      if (!window.Proxy) {
         this[prop] = value;
       } else {
-        this[prop] = that.polyfillProxyCb(value, prop, this);
-        polyfillProxy(this, that.polyfillProxyCb);
+        if (this.hasOwnProperty(prop)) {
+          this[prop] = value;
+        } else {
+          this[prop] = that.polyfillProxyCb(value, prop, this);
+          polyfillProxy(this, that.polyfillProxyCb);
+        }
       }
     })(this);
 
@@ -144,10 +116,23 @@ export class CreateConfig {
 
   overwriteArrayMethod = () => {
     const createArrayProto = this.addFunctionToProto(arrayProto);
-    if (!window.Proxy) {
+    if (!!window.Proxy) {
       methodsToPatch.forEach((method) => {
         const that = this;
         createMark(createArrayProto, method, function (...args) {
+          // const len = this.length;
+          // if (method === "push") {
+          //   const insertData = args.splice(0);
+          //   insertData.forEach((item, index) => {
+          //     this.$set(len + index, item);
+          //   });
+          // } else if (method === "unshift") {
+          //   const insertData = args.splice(0);
+          //   insertData.forEach((item, index) => {
+          //     this.$set(index, item);
+          //   });
+          // }
+
           let insertData = [];
           switch (method) {
             case "push":
@@ -215,7 +200,6 @@ export class CreateConfig {
       createMark(config, "__m__", {
         $cfg: "cid",
         originProps: {},
-        originPar: {},
         propsIndexs: {},
       });
     }
@@ -236,7 +220,6 @@ export class CreateConfig {
       createMark(config, "__m__", {
         $cfg: "root",
         originProps: {},
-        originPar: {},
         propsIndexs: {},
       });
       Object.setPrototypeOf(config, this.createArrayProto);

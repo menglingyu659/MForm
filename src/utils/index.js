@@ -1,33 +1,3 @@
-// export function overwriteMethods(methods, configIndex, ownIndex) {
-//   if (!methods) return methods;
-//   const newMethods = { ...methods };
-//   const reg = /^(on|handle).*/;
-//   for (const prop in newMethods) {
-//     const item = newMethods[prop];
-
-//     if (typeof item === "function" && reg.test(item.name)) {
-//       newMethods[prop] = function (...args) {
-//         return item.apply(this, args.concat(configIndex, ownIndex));
-//       };
-//     }
-//   }
-//   return newMethods;
-// }
-
-// export function overwriteMethods(methods, par) {
-//   if (!methods) return methods;
-//   const newMethods = { ...methods };
-//   for (const prop in newMethods) {
-//     const item = newMethods[prop];
-//     if (typeof item === "function") {
-//       newMethods[prop] = function (...args) {
-//         return item.apply(this, [par, ...args]);
-//       };
-//     }
-//   }
-//   return newMethods;
-// }
-
 export function overwriteMethod(originOnFunction, par) {
   return function (...args) {
     return originOnFunction.apply(this, [par, ...args]);
@@ -35,14 +5,15 @@ export function overwriteMethod(originOnFunction, par) {
 }
 
 function IEProxy(config, callback) {
-  for (const cfg in config) {
-    let value = config[cfg];
-    Object.defineProperty(config, cfg, {
+  for (const prop in config) {
+    let value = config[prop];
+    Object.defineProperty(config, prop, {
       get() {
         return value;
       },
       set(newValue) {
-        value = callback(newValue, cfg, config);
+        // console.log(newValue, "config");
+        value = callback(newValue, prop, config);
       },
     });
   }
@@ -64,7 +35,7 @@ function webkit(config, callback) {
 export function polyfillProxy(config, callback) {
   if (typeof config !== "object" || config === null) return config;
   let initedConfig;
-  if (window.Proxy) {
+  if (!window.Proxy) {
     initedConfig = webkit(config, callback);
   } else {
     // 兼容IE
@@ -80,6 +51,12 @@ export function getDealData(newVla) {
   };
 }
 
+export function dealOriginProps(originProps, cfg, prop) {
+  if (prop === "components") {
+    originProps.components = cfg;
+  }
+}
+
 export function dealData(willDealData) {
   const { active, bind, other } = willDealData;
   active.forEach(({ origin, prop, value, props }) => {
@@ -89,7 +66,6 @@ export function dealData(willDealData) {
     }
   });
   bind.forEach(({ origin, prop, value, props }) => {
-    // console.log(value);
     const newVla = overwriteMethod(value, props);
     origin[prop] = getDealData(newVla);
   });
@@ -102,12 +78,34 @@ export function dealData(willDealData) {
   });
 }
 
+function removeing(propsIndexs, prop, status, willDealData) {
+  const index = propsIndexs[prop];
+  willDealData[status].splice(index, 1);
+  delete propsIndexs[prop];
+}
+
+export function removeOriginDealDataRunner(cfg, prop, willDealData) {
+  const { propsIndexs } = cfg.__m__;
+  if (propsIndexs.hasOwnProperty(`active$_m_$${prop}`))
+    removeing(propsIndexs, `active$_m_$${prop}`, "active", willDealData);
+  else if (propsIndexs.hasOwnProperty(`bind$_m_$${prop}`))
+    removeing(propsIndexs, `bind$_m_$${prop}`, "bind", willDealData);
+  else if (propsIndexs.hasOwnProperty(`other$_m_$${prop}`))
+    removeing(propsIndexs, `other$_m_$${prop}`, "other", willDealData);
+}
+
+export function removeOriginDealData(cfg, willDealData) {
+  for (const prop in cfg) {
+    removeOriginDealDataRunner(cfg, prop, willDealData);
+    if (cfgControl(cfg, prop, cfg[prop])) {
+      removeOriginDealData(cfg[prop], willDealData);
+    }
+  }
+}
+
 export function cfgDeal(cfg, prop, value, props, willDealData) {
-  if (
+  if (typeof value === "function" && !/^(on|type|handle|\$).*/.test(prop)) {
     //处理动态绑定，children,render情况
-    typeof value === "function" &&
-    !/^(on|type|handle|\$).*/.test(prop)
-  ) {
     const cell = {
       origin: cfg,
       prop,
@@ -143,18 +141,21 @@ export function cfgDeal(cfg, prop, value, props, willDealData) {
   return cfg;
 }
 
-export function cfgDecorator(cfg, key, props, willDealData) {
+export function cfgDecorator(cfg, key, originProps, willDealData) {
   if (typeof cfg !== "object" || cfg === null) return cfg;
-  cfg.__m__.originPar = props;
+  cfg.__m__.originProps = originProps;
   for (const prop in cfg) {
     const value = cfg[prop];
     if (key === "components") {
-      props = { ...props, cmptProps: { cmpt: value, cmptIndex: prop } };
+      originProps = {
+        ...originProps,
+        cmptProps: { cmpt: value, cmptIndex: prop },
+      };
     }
-    cfgDeal(cfg, prop, value, props, willDealData);
+    cfgDeal(cfg, prop, value, originProps, willDealData);
     if (cfgControl(cfg, prop, value)) {
       //递归对象
-      cfgDecorator(value, prop, props, willDealData);
+      cfgDecorator(value, prop, originProps, willDealData);
     }
   }
   return cfg;
@@ -166,18 +167,17 @@ export function configDecorator(config = [], forceUpdata) {
     if (Object.prototype.toString.call(cfg) === "[object Object]") {
       const { divideIndex, components } = cfg;
       const ownIndex = divideIndex ? cfgIndex - divideIndex : undefined;
-      const cfgProps = {
-        cfgIndex,
-        ownIndex,
-        cfg,
-        divideIndex,
+      const originProps = {
+        cfgProps: {
+          cfgIndex,
+          ownIndex,
+          cfg,
+          divideIndex,
+        },
+        forceUpdata,
+        components,
       };
-      cfgDecorator(
-        cfg,
-        cfgIndex,
-        { cfgProps, forceUpdata, components },
-        willDealData
-      );
+      cfgDecorator(cfg, cfgIndex, originProps, willDealData);
     }
   });
   return willDealData;
@@ -214,10 +214,15 @@ export function createMark(originObjorArr, key = "__m__", values = {}) {
 
 export function cfgIndexReset(config = []) {
   config.forEach((cfg, cfgIndex) => {
-    const { cfgProps } = cfg.__m__.originPar;
+    const { cfgProps } = cfg.__m__.originProps;
     const { divideIndex } = cfg;
     const ownIndex = divideIndex ? cfgIndex - divideIndex : undefined;
     cfgProps.cfgIndex = cfgIndex;
     cfgProps.ownIndex = ownIndex;
   });
+}
+
+export function changeWillDealData(cfg, prop, value, willDealData) {
+  for (const prop in deleteData) {
+  }
 }

@@ -40,7 +40,6 @@ function _MForm(props, ref) {
     return willDealData;
   }, [initedConfig]);
   dealData(willDealData);
-  console.log(initedConfig);
   useLayoutEffect(() => {
     const unlisten = innerHooks.setRegister(_forceUpdata);
     return () => {
