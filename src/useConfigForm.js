@@ -5,8 +5,6 @@ import {
   cfgControl,
   cfgDecorator,
   cfgIndexReset,
-  cfgDeal,
-  getDealData,
 } from "./utils";
 
 const arrayProto = Array.prototype;
@@ -25,7 +23,7 @@ export class CreateConfig {
   constructor(config) {
     this.config = config;
     this.register = [];
-    this.willDealData = { active: [], bind: [], other: [] };
+    this.willDealData = {};
     // this.keying(config);
     if (config) {
       this.createObjectProto = this.overwriteObjectMethod();
@@ -34,7 +32,9 @@ export class CreateConfig {
     }
   }
 
-  getWillDealData = () => this.willDealData;
+  setWillDealData = (willDealData) => {
+    this.willDealData = willDealData;
+  };
 
   forceUpdate = () => {
     this.register.forEach((item) => {
@@ -81,28 +81,28 @@ export class CreateConfig {
       }
     }
     if (cfgControl(cfg, prop, value) && !value.hasOwnProperty("__m__")) {
-      value = this.pxying(originPar)(value);
-      // if (
-      //   $cfg === "root" &&
-      //   Object.prototype.toString.call(value) === "[object Object]"
-      // ) {
-      //   const { divideIndex, components } = value;
-      //   const cfgIndex = Number(prop);
-      //   const ownIndex = divideIndex ? cfgIndex - divideIndex : undefined;
-      //   const cfgProps = {
-      //     cfgIndex,
-      //     ownIndex,
-      //     cfg,
-      //     divideIndex,
-      //   };
-      //   const _originPar = {
-      //     cfgProps,
-      //     forceUpdata: this.forceUpdate,
-      //     components,
-      //   };
-      //   originPar = _originPar;
-      // }
-      // cfgDecorator(value, prop, originPar, this.willDealData);
+      value = this.pxying(value);
+      if (
+        $cfg === "root" &&
+        Object.prototype.toString.call(value) === "[object Object]"
+      ) {
+        const { divideIndex, components } = value;
+        const cfgIndex = Number(prop);
+        const ownIndex = divideIndex ? cfgIndex - divideIndex : undefined;
+        const cfgProps = {
+          cfgIndex,
+          ownIndex,
+          cfg,
+          divideIndex,
+        };
+        const _originPar = {
+          cfgProps,
+          forceUpdata: this.forceUpdate,
+          components,
+        };
+        originPar = _originPar;
+      }
+      cfgDecorator(value, prop, originPar, this.willDealData);
     }
     this.forceUpdate();
     return value;
@@ -177,55 +177,60 @@ export class CreateConfig {
     return createArrayProto;
   };
 
-  pxying = (props) => {
-    const innerPxying = (config, key, status = "child") => {
-      if (typeof config !== "object" || config === null) return config;
-      if (!config.__m__) {
-        if (Array.isArray(config))
-          Object.setPrototypeOf(config, this.createArrayProto);
-        if (Object.prototype.toString.call(config) === "[object Object]") {
-          Object.setPrototypeOf(config, this.createObjectProto);
-        }
-        createMark(config, "__m__", {
-          $cfg: "cid",
-          originProps: {},
-          originPar: props,
-          propsIndexs: {},
-        });
+  // pxying = (configIndex, ownIndex) => {
+  //   const innerPxying = (config) => {
+  //     // if (typeof config === "function" && /^(on|handle).*/.test(config.name))
+  //     //   return this.overwriteMethods(config, configIndex, ownIndex);
+  //     if (typeof config !== "object") return config;
+  //     if (!config.__m__) {
+  //       if (Array.isArray(config))
+  //         Object.setPrototypeOf(config, this.createArrayProto);
+  //       if (Object.prototype.toString.call(config) === "[object Object]") {
+  //         Object.setPrototypeOf(config, this.createObjectProto);
+  //       }
+  //       createMark(config, "__m__", {
+  //         // configIndex,
+  //         // ownIndex,
+  //         $cfg: "cid",
+  //       });
+  //     }
+  //     for (const cfg in config) {
+  //       const every = config[cfg];
+  //       config[cfg] = innerPxying(every);
+  //     }
+  //     return polyfillProxy(config, () => {
+  //       this.forceUpdate();
+  //     });
+  //   };
+  //   return innerPxying;
+  // };
+  pxying = (config) => {
+    if (typeof config !== "object" || config === null) return config;
+    if (!config.__m__) {
+      if (Array.isArray(config))
+        Object.setPrototypeOf(config, this.createArrayProto);
+      if (Object.prototype.toString.call(config) === "[object Object]") {
+        Object.setPrototypeOf(config, this.createObjectProto);
       }
-      const proxyConfig = polyfillProxy(config, this.polyfillProxyCb);
-      if (status === "root") {
-        props.cfgProps.cfg = proxyConfig;
-      }
-      for (const cfg in config) {
+      createMark(config, "__m__", {
+        $cfg: "cid",
+        originProps: {},
+        originPar: {},
+        propsIndexs: {},
+      });
+    }
+    for (const cfg in config) {
+      if (cfg !== "type" && !/^\$.*/.test(cfg)) {
         const every = config[cfg];
-        if (key === "components") {
-          props = { ...props, cmptProps: { cmpt: every, cmptIndex: cfg } };
-        }
-        cfgDeal(proxyConfig, cfg, every, props, this.willDealData);
-        if (cfg !== "type" && !/^\$.*/.test(cfg)) {
-          config[cfg] = innerPxying(every, cfg);
-        }
+        config[cfg] = this.pxying(every);
       }
-      return proxyConfig;
-    };
-    return innerPxying;
+    }
+    return polyfillProxy(config, this.polyfillProxyCb);
   };
 
   initConfig = (config = []) => {
-    config.forEach((cfg, cfgIndex) => {
-      const { divideIndex, components } = cfg;
-      const ownIndex = divideIndex ? cfgIndex - divideIndex : undefined;
-      const props = {
-        cfgProps: {
-          cfgIndex,
-          ownIndex,
-          cfg,
-          divideIndex,
-        },
-        forceUpdata: this.forceUpdate,
-      };
-      config[cfgIndex] = this.pxying(props)(cfg, cfgIndex, "root");
+    config.forEach((item, index) => {
+      config[index] = this.pxying(item);
     });
     if (!config.__m__) {
       createMark(config, "__m__", {
@@ -252,7 +257,7 @@ export class CreateConfig {
       setRegister: this.setRegister,
       add: this.add,
       minus: this.minus,
-      getWillDealData: this.getWillDealData,
+      setWillDealData: this.setWillDealData,
     };
   };
 

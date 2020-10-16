@@ -7,7 +7,7 @@ import React, {
 import { Col, Form, Row } from "antd";
 import { createFormItemContent } from "./createFormItemContent";
 import { useConfigForm } from "./useConfigForm";
-import { dealData, validatorKey } from "./utils";
+import { configDecorator, dealData, validatorKey } from "./utils";
 import Title from "./Title";
 
 const FormItem = Form.Item;
@@ -34,13 +34,12 @@ function _MForm(props, ref) {
     initedConfig,
     setting,
   ]);
-  // const willDealData = useMemo(() => {
-  //   const willDealData = configDecorator(initedConfig, _forceUpdata);
-  //   innerHooks.setWillDealData(willDealData);
-  //   return willDealData;
-  // }, [initedConfig]);
-  console.log(innerHooks.getWillDealData());
-  dealData(innerHooks.getWillDealData());
+  const willDealData = useMemo(() => {
+    const willDealData = configDecorator(initedConfig, _forceUpdata);
+    innerHooks.setWillDealData(willDealData);
+    return willDealData;
+  }, [initedConfig]);
+  dealData(willDealData);
   console.log(initedConfig);
   useLayoutEffect(() => {
     const unlisten = innerHooks.setRegister(_forceUpdata);
