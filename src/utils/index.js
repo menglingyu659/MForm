@@ -51,26 +51,61 @@ export function getDealData(newVla) {
   };
 }
 
-export function dealOriginProps(originProps, cfg, prop) {
+export function dealOriginProps(originProps, cfg, value, prop) {
+  const { $cfg } = cfg.__m__;
   if (prop === "components") {
-    originProps.components = cfg;
+    originProps.components = value;
+    return originProps;
   }
+  if ($cfg === "components") {
+    return {
+      ...originProps,
+      cmptProps: {
+        cmpt: value,
+        cmptIndex: Number(prop),
+      },
+    };
+  }
+  if ($cfg === "root") {
+    const cfgIndex = Number(prop);
+    const { divideIndex, components } = value;
+    const ownIndex = divideIndex ? cfgIndex - divideIndex : undefined;
+    return {
+      ...originProps,
+      cfgProps: {
+        cfg: value,
+        cfgIndex,
+        ownIndex,
+        divideIndex,
+      },
+      components,
+    };
+  }
+  return originProps;
 }
 
 export function dealData(willDealData) {
   const { active, bind, other } = willDealData;
-  active.forEach(({ origin, prop, value, props }) => {
+  active.forEach((act) => {
+    if (act === null) return;
+    const { origin, prop, value, props } = act;
     if (typeof value === "function") {
       const newVla = value(props);
       origin[prop] = getDealData(newVla);
+      console.log(origin, origin[prop]);
     }
   });
-  bind.forEach(({ origin, prop, value, props }) => {
+  bind.forEach((bid) => {
+    if (bid === null) return;
+    const { origin, prop, value, props } = bid;
     const newVla = overwriteMethod(value, props);
     origin[prop] = getDealData(newVla);
   });
-  other.forEach(({ origin, prop, value }) => {
-    /^\$(.*)/.test(prop);
+  other.forEach((oth) => {
+    if (oth === null) return;
+    const { origin, prop, value } = oth;
+    const reg = /^\$(.*)/;
+    reg.test(prop);
     const _prop = RegExp.$1;
     const _value = getDealData(value);
     origin.$set(_prop, _value);
@@ -80,11 +115,12 @@ export function dealData(willDealData) {
 
 function removeing(propsIndexs, prop, status, willDealData) {
   const index = propsIndexs[prop];
-  willDealData[status].splice(index, 1);
+  willDealData[status][index] = null;
   delete propsIndexs[prop];
 }
 
 export function removeOriginDealDataRunner(cfg, prop, willDealData) {
+  if (!cfg.hasOwnProperty("__m__")) return cfg;
   const { propsIndexs } = cfg.__m__;
   if (propsIndexs.hasOwnProperty(`active$_m_$${prop}`))
     removeing(propsIndexs, `active$_m_$${prop}`, "active", willDealData);
@@ -92,6 +128,7 @@ export function removeOriginDealDataRunner(cfg, prop, willDealData) {
     removeing(propsIndexs, `bind$_m_$${prop}`, "bind", willDealData);
   else if (propsIndexs.hasOwnProperty(`other$_m_$${prop}`))
     removeing(propsIndexs, `other$_m_$${prop}`, "other", willDealData);
+  return cfg;
 }
 
 export function removeOriginDealData(cfg, willDealData) {
@@ -101,6 +138,7 @@ export function removeOriginDealData(cfg, willDealData) {
       removeOriginDealData(cfg[prop], willDealData);
     }
   }
+  return cfg;
 }
 
 export function cfgDeal(cfg, prop, value, props, willDealData) {
@@ -141,15 +179,31 @@ export function cfgDeal(cfg, prop, value, props, willDealData) {
   return cfg;
 }
 
+function toggle(cfg, newProps) {
+  const {
+    originProps: { cmptProps, cfgProps },
+  } = cfg.__m__;
+  if (cmptProps) {
+    cmptProps.cmptIndex = newProps.cmptProps.cmptIndex;
+  } else {
+    cfgProps.cfgIndex = newProps.cfgProps.cfgIndex;
+    cfgProps.ownIndex = newProps.cfgProps.ownIndex;
+    cfgProps.divideIndex = newProps.cfgProps.divideIndex;
+  }
+  return cfg;
+}
+
 export function cfgDecorator(cfg, key, originProps, willDealData) {
   if (typeof cfg !== "object" || cfg === null) return cfg;
+  if (JSON.stringify(cfg.__m__.originProps) !== "{}")
+    return toggle(cfg, originProps);
   cfg.__m__.originProps = originProps;
   for (const prop in cfg) {
     const value = cfg[prop];
     if (key === "components") {
       originProps = {
         ...originProps,
-        cmptProps: { cmpt: value, cmptIndex: prop },
+        cmptProps: { cmpt: value, cmptIndex: Number(prop) },
       };
     }
     cfgDeal(cfg, prop, value, originProps, willDealData);
@@ -169,9 +223,9 @@ export function configDecorator(config = [], forceUpdata) {
       const ownIndex = divideIndex ? cfgIndex - divideIndex : undefined;
       const originProps = {
         cfgProps: {
+          cfg,
           cfgIndex,
           ownIndex,
-          cfg,
           divideIndex,
         },
         forceUpdata,
@@ -180,6 +234,9 @@ export function configDecorator(config = [], forceUpdata) {
       cfgDecorator(cfg, cfgIndex, originProps, willDealData);
     }
   });
+  config.__m__.originProps = {
+    forceUpdata,
+  };
   return willDealData;
 }
 
@@ -222,7 +279,58 @@ export function cfgIndexReset(config = []) {
   });
 }
 
-export function changeWillDealData(cfg, prop, value, willDealData) {
-  for (const prop in deleteData) {
+class BinaryTree {
+  constructor(coll) {
+    this.stack = [];
+    this.root = null;
+    this.createBinaryTree(coll);
+  }
+
+  static BinaryTree(value) {
+    this.value = value;
+    this.left = this.right = null;
+  }
+
+  insertNode(value) {
+    const node = new BinaryTree.BinaryTree(value);
+    this.stack.push(node);
+    if (this.root === null) {
+      this.root = node;
+    } else {
+      this.inset(node);
+    }
+  }
+
+  inset(node) {
+    if (this.stack[0].left === null) {
+      this.stack[0].left = node;
+    } else {
+      this.stack.shift().right = node;
+    }
+  }
+
+  createBinaryTree(coll) {
+    for (const prop in coll) {
+      this.insertNode(coll[prop]);
+    }
+    return this;
   }
 }
+
+export function compare(origin, target) {
+  let result;
+  if (Object.is(origin, target)) result = true;
+  else if (
+    !Object.is(
+      Object.prototype.toString.call(origin),
+      Object.prototype.toString.call(target)
+    )
+  ) {
+    result = [{ type: "change", origin, target }];
+  } else {
+    result = [];
+  }
+  return result;
+}
+
+export function diff(origin, target) {}

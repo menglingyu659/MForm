@@ -3,6 +3,7 @@ import React, {
   useLayoutEffect,
   useImperativeHandle,
   useMemo,
+  useCallback,
 } from "react";
 import { Col, Form, Row } from "antd";
 import { createFormItemContent } from "./createFormItemContent";
@@ -25,7 +26,7 @@ function _MForm(props, ref) {
     ...newProps
   } = props;
   const [, forceUpdata] = useState(null);
-  const _forceUpdata = () => forceUpdata({});
+  const _forceUpdata = useCallback(() => forceUpdata({}), []);
   const [initedConfig, setting] = useConfigForm(config, depend, inited, {
     form,
   });
@@ -34,12 +35,16 @@ function _MForm(props, ref) {
     initedConfig,
     setting,
   ]);
+  console.log("uuuuuuuuuuuuu");
   const willDealData = useMemo(() => {
+    console.log("-------------------------------------------------");
     const willDealData = configDecorator(initedConfig, _forceUpdata);
     innerHooks.setWillDealData(willDealData);
     return willDealData;
   }, [initedConfig]);
   dealData(willDealData);
+  // console.log(JSON.stringify(willDealData));
+  // console.log(JSON.stringify(initedConfig));
   useLayoutEffect(() => {
     const unlisten = innerHooks.setRegister(_forceUpdata);
     return () => {

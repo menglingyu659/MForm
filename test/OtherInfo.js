@@ -181,8 +181,9 @@ function OtherInfo(props) {
         },
       },
       title: {
-        label: ({ cfgProps: { ownIndex } }) => `弟弟答案${ownIndex + 1}`,
-        isShowAdd({ cfgProps: { ownIndex } }) {
+        label: ({ cfgProps: { ownIndex } }) => `弟弟答案${ownIndex + 1}_${num}`,
+        isShowAdd({ cfgProps, cfgProps: { ownIndex } }) {
+          console.log(cfgProps, count === ownIndex + 1);
           return count === ownIndex + 1;
         },
         isShowMinus() {
@@ -197,13 +198,13 @@ function OtherInfo(props) {
           count--;
           minus();
         },
-        props: {
-          onClick(p) {
-            console.log(p);
-            // proxyConfig[cfgIndex].title.label = "cfgIndex";
-            // console.log(arg, "arg");
-          },
-        },
+        // props: {
+        // onClick(p) {
+        //   console.log(p);
+        //   // proxyConfig[cfgIndex].title.label = "cfgIndex";
+        //   // console.log(arg, "arg");
+        // },
+        // },
       },
       col: {
         span: 8,
@@ -269,7 +270,7 @@ function OtherInfo(props) {
                 p.cfgProps.cfg.title = {
                   label: (x) => {
                     console.log(x);
-                    return "f人信息";
+                    return "f人信息" + x.cfgProps.cfgIndex;
                   },
                   onClick(p) {
                     // p.cfg.title.$set("label", "w");
@@ -342,6 +343,7 @@ function OtherInfo(props) {
   const [proxyConfig, inited] = useConfigForm(config, [f]);
   useEffect(() => {
     console.log("inited", inited);
+    console.log(config);
   }, []);
   return (
     <div>
