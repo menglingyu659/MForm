@@ -1,3 +1,5 @@
+export const hasProxy = !window.Proxy;
+
 export function overwriteMethod(originOnFunction, par) {
   return function (...args) {
     return originOnFunction.apply(this, [par, ...args]);
@@ -12,7 +14,6 @@ function IEProxy(config, callback) {
         return value;
       },
       set(newValue) {
-        // console.log(newValue, "config");
         value = callback(newValue, prop, config);
       },
     });
@@ -25,8 +26,8 @@ function webkit(config, callback) {
     get: (target, prop) => {
       return Reflect.get(target, prop);
     },
-    set: (target, prop, value) => {
-      Reflect.set(target, prop, callback(value, prop, target));
+    set: (target, prop, value, receiver) => {
+      Reflect.set(target, prop, callback(value, prop, receiver));
       return true;
     },
   });
@@ -35,7 +36,7 @@ function webkit(config, callback) {
 export function polyfillProxy(config, callback) {
   if (typeof config !== "object" || config === null) return config;
   let initedConfig;
-  if (!window.Proxy) {
+  if (hasProxy) {
     initedConfig = webkit(config, callback);
   } else {
     // 兼容IE
@@ -87,22 +88,19 @@ export function dealOriginProps(originProps, cfg, value, prop) {
 export function dealData(willDealData) {
   const { active, bind, other } = willDealData;
   active.forEach((act) => {
-    if (act === null) return;
     const { origin, prop, value, props } = act;
     if (typeof value === "function") {
       const newVla = value(props);
       origin[prop] = getDealData(newVla);
-      console.log(origin, origin[prop]);
     }
   });
   bind.forEach((bid) => {
-    if (bid === null) return;
     const { origin, prop, value, props } = bid;
     const newVla = overwriteMethod(value, props);
     origin[prop] = getDealData(newVla);
+    delete origin.__m__.propsIndexs[`bind$_m_$${prop}`];
   });
   other.forEach((oth) => {
-    if (oth === null) return;
     const { origin, prop, value } = oth;
     const reg = /^\$(.*)/;
     reg.test(prop);
@@ -110,12 +108,15 @@ export function dealData(willDealData) {
     const _value = getDealData(value);
     origin.$set(_prop, _value);
     delete origin[prop];
+    delete origin.__m__.propsIndexs[`other$_m_$${prop}`];
   });
+  willDealData.bind = [];
+  willDealData.other = [];
 }
 
 function removeing(propsIndexs, prop, status, willDealData) {
   const index = propsIndexs[prop];
-  willDealData[status][index] = null;
+  delete willDealData[status][index];
   delete propsIndexs[prop];
 }
 
@@ -124,10 +125,10 @@ export function removeOriginDealDataRunner(cfg, prop, willDealData) {
   const { propsIndexs } = cfg.__m__;
   if (propsIndexs.hasOwnProperty(`active$_m_$${prop}`))
     removeing(propsIndexs, `active$_m_$${prop}`, "active", willDealData);
-  else if (propsIndexs.hasOwnProperty(`bind$_m_$${prop}`))
-    removeing(propsIndexs, `bind$_m_$${prop}`, "bind", willDealData);
-  else if (propsIndexs.hasOwnProperty(`other$_m_$${prop}`))
-    removeing(propsIndexs, `other$_m_$${prop}`, "other", willDealData);
+  // else if (propsIndexs.hasOwnProperty(`bind$_m_$${prop}`))
+  //   removeing(propsIndexs, `bind$_m_$${prop}`, "bind", willDealData);
+  // else if (propsIndexs.hasOwnProperty(`other$_m_$${prop}`))
+  //   removeing(propsIndexs, `other$_m_$${prop}`, "other", willDealData);
   return cfg;
 }
 

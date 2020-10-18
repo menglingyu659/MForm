@@ -26,7 +26,7 @@ function _MForm(props, ref) {
     ...newProps
   } = props;
   const [, forceUpdata] = useState(null);
-  const _forceUpdata = useCallback(() => forceUpdata({}), []);
+  const _forceUpdata = () => forceUpdata({});
   const [initedConfig, setting] = useConfigForm(config, depend, inited, {
     form,
   });
@@ -35,22 +35,18 @@ function _MForm(props, ref) {
     initedConfig,
     setting,
   ]);
-  console.log("uuuuuuuuuuuuu");
   const willDealData = useMemo(() => {
-    console.log("-------------------------------------------------");
     const willDealData = configDecorator(initedConfig, _forceUpdata);
     innerHooks.setWillDealData(willDealData);
     return willDealData;
   }, [initedConfig]);
   dealData(willDealData);
-  // console.log(JSON.stringify(willDealData));
-  // console.log(JSON.stringify(initedConfig));
   useLayoutEffect(() => {
     const unlisten = innerHooks.setRegister(_forceUpdata);
     return () => {
       unlisten();
     };
-  }, []);
+  }, [initedConfig]);
   return (
     <Form {...newProps}>
       {initedConfig.map((p, configIndex) => {

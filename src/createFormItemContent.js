@@ -1,21 +1,7 @@
 import React from "react";
 import { Input, Select } from "antd";
-import { validatorKey } from "./utils";
-
-const { Option, OptGroup } = Select;
-
-function createOption(opt, comIndex) {
-  if (Object.prototype.toString.call(opt) !== "[object Object]") return null;
-  const { id, label, value, key, name } = opt;
-  return (
-    <Option
-      key={validatorKey([value, id, key], comIndex)}
-      value={validatorKey([id, key, value], undefined)}
-    >
-      {validatorKey([name, label], undefined)}
-    </Option>
-  );
-}
+import { createOption } from "./createOption";
+const { OptGroup } = Select;
 
 function createFormItemContent(_props) {
   const {

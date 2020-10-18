@@ -198,13 +198,13 @@ function OtherInfo(props) {
           count--;
           minus();
         },
-        // props: {
-        // onClick(p) {
-        //   console.log(p);
-        //   // proxyConfig[cfgIndex].title.label = "cfgIndex";
-        //   // console.log(arg, "arg");
-        // },
-        // },
+        props: {
+          onClick(p) {
+            console.log(p);
+            // proxyConfig[cfgIndex].title.label = "cfgIndex";
+            // console.log(arg, "arg");
+          },
+        },
       },
       col: {
         span: 8,
@@ -249,7 +249,6 @@ function OtherInfo(props) {
   let config = [
     {
       id: 0,
-      title: "a",
       col: {
         span: 8,
       },
@@ -259,6 +258,9 @@ function OtherInfo(props) {
           id: 0,
           label: "窝窝名称",
           name: "wowoName",
+          getFieldDecoratorOptions: {
+            $initialValue: 1231,
+          },
           element: {
             in: "aaaw",
             props: {
@@ -267,16 +269,35 @@ function OtherInfo(props) {
               onClick(p, element) {
                 console.log(p);
                 // p.cfgProps.cfg.title = "999";
-                p.cfgProps.cfg.title = {
+                p.components[2].getFieldDecoratorOptions.$set(
+                  "$initialValue",
+                  moment("1234-10-08")
+                );
+                // p.components[2].getFieldDecoratorOptions.$initialValue = moment(
+                //   "1234-10-08"
+                // );
+
+                p.cmptProps.cmpt.getFieldDecoratorOptions.initialValue = "9999";
+                p.cfgProps.cfg.$set("title", {
                   label: (x) => {
-                    console.log(x);
+                    // console.log(x);
                     return "f人信息" + x.cfgProps.cfgIndex;
                   },
                   onClick(p) {
                     // p.cfg.title.$set("label", "w");
                     console.log((p.cfgProps.cfg.title.label = "w"));
                   },
-                };
+                });
+                // p.cfgProps.cfg.title = {
+                //   label: (x) => {
+                //     console.log(x);
+                //     return "f人信息" + x.cfgProps.cfgIndex;
+                //   },
+                //   onClick(p) {
+                //     // p.cfg.title.$set("label", "w");
+                //     console.log((p.cfgProps.cfg.title.label = "w"));
+                //   },
+                // };
                 // num++;
                 // console.log(num);
                 // proxyConfig[cfgIndex].l = "3";
@@ -341,6 +362,7 @@ function OtherInfo(props) {
   ];
   console.log("1", config[0].__m__);
   const [proxyConfig, inited] = useConfigForm(config, [f]);
+  console.log(useConfigForm);
   useEffect(() => {
     console.log("inited", inited);
     console.log(config);

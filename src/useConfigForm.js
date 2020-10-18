@@ -9,6 +9,7 @@ import {
   removeOriginDealData,
   removeOriginDealDataRunner,
   dealOriginProps,
+  hasProxy,
 } from "./utils";
 
 const arrayProto = Array.prototype;
@@ -41,7 +42,6 @@ export class CreateConfig {
   };
 
   forceUpdate = () => {
-    console.log(this.register);
     this.register.forEach((item) => {
       typeof item === "function" && item();
     });
@@ -57,7 +57,6 @@ export class CreateConfig {
 
   polyfillProxyCb = (value, prop, cfg) => {
     if (value.mark === "mmm_init") return value.value;
-    console.log(132);
     const flag = cfg.hasOwnProperty(prop);
     const oValue = cfg[prop];
     let originProps =
@@ -71,7 +70,6 @@ export class CreateConfig {
       cfgDeal(cfg, prop, value, originProps, this.willDealData);
       if (flag) removeOriginDealDataRunner(cfg, prop, this.willDealData);
     }
-    console.log(444);
     this.forceUpdate();
     return value;
   };
@@ -84,7 +82,7 @@ export class CreateConfig {
 
   $set = ((that) =>
     function (prop, value) {
-      if (!window.Proxy) {
+      if (hasProxy) {
         this[prop] = value;
       } else {
         if (this.hasOwnProperty(prop)) {
@@ -116,12 +114,11 @@ export class CreateConfig {
 
   overwriteArrayMethod = () => {
     const createArrayProto = this.addFunctionToProto(arrayProto);
-    // if (!!window.Proxy) {
     methodsToPatch.forEach((method) => {
       const that = this;
       createMark(createArrayProto, method, function (...args) {
+        const flag = ["pop", "splice"].includes(method);
         let insertData = [];
-        let removeData;
         switch (method) {
           case "push":
           case "unshift":
@@ -132,7 +129,7 @@ export class CreateConfig {
             break;
         }
         const len = this.length;
-        const _args = !window.Proxy
+        const _args = hasProxy
           ? insertData
           : insertData.map((item) => {
               const proxyValue = that.pxying(item);
@@ -143,30 +140,22 @@ export class CreateConfig {
           ...args,
           ..._args,
         ]);
-        const flag = ["pop", "splice"].includes(method);
-        if (flag) {
-          removeData = methodReturn;
+        if (flag && typeof methodReturn === "object" && methodReturn !== null) {
+          removeOriginDealData(methodReturn, that.willDealData);
         }
-        if (typeof removeData === "object" && removeData !== null) {
-          console.log(removeData);
-          removeOriginDealData(removeData, that.willDealData);
-        }
-        if (window.Proxy) {
+        if (!hasProxy) {
           // 兼容IE
-          let originProps = this.__m__.originProps;
-          console.log(originProps);
+          let { originProps } = this.__m__;
           this.slice(len).forEach((item, index) => {
-            console.log(item);
             originProps = dealOriginProps(originProps, this, item, index + len);
             cfgDecorator(item, index + len, originProps, that.willDealData);
           });
           if (insertData.length) polyfillProxy(this, that.polyfillProxyCb);
         }
-        if (window.Proxy || flag) that.forceUpdate();
+        if (!hasProxy || flag) that.forceUpdate();
         return methodReturn;
       });
     });
-    // }
     return createArrayProto;
   };
 
@@ -269,7 +258,8 @@ function insertFormObject(inserter = {}, beInsert) {
   return beInsert;
 }
 
-function useConfigForm(config, depend, inited, inserter) {
+function useConfigForm(config, depend, ...args) {
+  const [inited, inserter] = args;
   if (
     Object.prototype.toString.call(inited) === "[object Object]" &&
     inited.mmm_mark === "MMMM_INNER"
@@ -280,7 +270,6 @@ function useConfigForm(config, depend, inited, inserter) {
     }, [config, inited]);
   }
   return React.useMemo(() => {
-    console.log("ip");
     const [proxyConfig, inited] = new CreateConfig(config).getConfig();
     const _target = insertFormObject(inserter, inited);
     return [proxyConfig, _target];
