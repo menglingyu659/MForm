@@ -78,8 +78,12 @@ export class CreateConfig {
       if (window.Proxy) {
         this[prop] = value;
       } else {
-        this[prop] = that.polyfillProxyCb(value, prop, this);
-        polyfillProxy(this, that.polyfillProxyCb);
+        if (this.hasOwnProperty(prop)) {
+          this[prop] = value;
+        } else {
+          this[prop] = that.polyfillProxyCb(value, prop, this);
+          polyfillProxy(this, that.polyfillProxyCb);
+        }
       }
     })(this);
 
