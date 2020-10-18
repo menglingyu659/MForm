@@ -27,6 +27,7 @@
 //   }
 //   return newMethods;
 // }
+export const hasProxy = window.Proxy;
 
 export function overwriteMethod(originOnFunction, par) {
   return function (...args) {
@@ -64,7 +65,7 @@ function webkit(config, callback) {
 export function polyfillProxy(config, callback) {
   if (typeof config !== "object" || config === null) return config;
   let initedConfig;
-  if (window.Proxy) {
+  if (hasProxy) {
     initedConfig = webkit(config, callback);
   } else {
     // 兼容IE

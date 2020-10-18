@@ -1,5 +1,5 @@
 import React from "react";
-import { createMark, polyfillProxy, cfgControl } from "./utils";
+import { createMark, polyfillProxy, cfgControl, hasProxy } from "./utils";
 
 const arrayProto = Array.prototype;
 const objectProto = Object.prototype;
@@ -75,7 +75,7 @@ export class CreateConfig {
 
   $set = ((that) =>
     function (prop, value) {
-      if (window.Proxy) {
+      if (hasProxy) {
         this[prop] = value;
       } else {
         if (this.hasOwnProperty(prop)) {
@@ -107,7 +107,7 @@ export class CreateConfig {
 
   overwriteArrayMethod = () => {
     const createArrayProto = this.addFunctionToProto(arrayProto);
-    if (!window.Proxy) {
+    if (!hasProxy) {
       methodsToPatch.forEach((method) => {
         const that = this;
         createMark(createArrayProto, method, function (...args) {
@@ -131,8 +131,8 @@ export class CreateConfig {
           if (insertData.length) {
             // 兼容IE
             polyfillProxy(this, that.polyfillProxyCb);
-            that.forceUpdate();
           }
+          that.forceUpdate();
           return methodReturn;
         });
       });
