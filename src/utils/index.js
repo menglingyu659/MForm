@@ -1,4 +1,4 @@
-export const hasProxy = !window.Proxy;
+export const hasProxy = window.Proxy;
 
 export function overwriteMethod(originOnFunction, par) {
   return function (...args) {

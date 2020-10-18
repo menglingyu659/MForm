@@ -198,12 +198,14 @@ function OtherInfo(props) {
           count--;
           minus();
         },
-        props: {
-          onClick(p) {
-            console.log(p);
-            // proxyConfig[cfgIndex].title.label = "cfgIndex";
-            // console.log(arg, "arg");
-          },
+        onClick(p) {
+          console.log(p.cfgProps.cfg.title.onClick);
+          p.cfgProps.cfg.title.onClick = (a) => {
+            console.log("dididi", a);
+          };
+
+          // proxyConfig[cfgIndex].title.label = "cfgIndex";
+          // console.log(arg, "arg");
         },
       },
       col: {
@@ -269,13 +271,13 @@ function OtherInfo(props) {
               onClick(p, element) {
                 console.log(p);
                 // p.cfgProps.cfg.title = "999";
-                p.components[2].getFieldDecoratorOptions.$set(
-                  "$initialValue",
-                  moment("1234-10-08")
-                );
-                // p.components[2].getFieldDecoratorOptions.$initialValue = moment(
-                //   "1234-10-08"
+                // p.components[2].getFieldDecoratorOptions.$set(
+                //   "$initialValue",
+                //   moment("1234-10-08")
                 // );
+                p.components[2].getFieldDecoratorOptions.$initialValue = moment(
+                  "1234-10-08"
+                );
 
                 p.cmptProps.cmpt.getFieldDecoratorOptions.initialValue = "9999";
                 p.cfgProps.cfg.$set("title", {
@@ -360,9 +362,7 @@ function OtherInfo(props) {
     },
     cbf(),
   ];
-  console.log("1", config[0].__m__);
   const [proxyConfig, inited] = useConfigForm(config, [f]);
-  console.log(useConfigForm);
   useEffect(() => {
     console.log("inited", inited);
     console.log(config);

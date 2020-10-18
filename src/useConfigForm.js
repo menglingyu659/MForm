@@ -251,11 +251,11 @@ export class CreateConfig {
   };
 }
 
-function insertFormObject(inserter = {}, beInsert) {
+function insertFormObject(inserter = {}, inited) {
   for (const prop in inserter) {
-    beInsert[prop] = inserter[prop];
+    inited[prop] = inserter[prop];
   }
-  return beInsert;
+  return inited;
 }
 
 function useConfigForm(config, depend, ...args) {

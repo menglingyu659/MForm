@@ -10,6 +10,6 @@ yarn.lock
 webpack.config.js
 webpack.prod.config.js
 webpack.npm.config.js
-.gitignor
+.gitignore
 .npmignore
 .vscode
