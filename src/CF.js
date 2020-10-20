@@ -1,4 +1,4 @@
-import React, { useLayoutEffect } from "react";
+import React, { useMemo, useLayoutEffect } from "react";
 import { Col, Form, Row } from "antd";
 import { createFormItemContent } from "./createFormItemContent";
 import { validatorKey } from "./utils";
@@ -7,7 +7,6 @@ import Title from "./Title";
 const FormItem = Form.Item;
 
 function CF({
-  form,
   initedConfig,
   setting,
   formElementProps,
@@ -19,9 +18,11 @@ function CF({
   newProps,
   innerHooks,
 }) {
+  const [form] = Form.useForm();
   useLayoutEffect(() => {
     setting.form = form;
   }, [setting, form]);
+  console.log(newProps);
   return (
     <Form {...newProps}>
       {initedConfig.map((p, configIndex) => {
@@ -66,7 +67,6 @@ function CF({
                   render,
                   props,
                   type: _type,
-                  getFieldDecoratorOptions,
                   col: { props: itemColProps, ...itemCol } = {},
                   //createFormItemContent所需要的信息
                   element: { props: elementProps, ...element } = {},
@@ -96,21 +96,13 @@ function CF({
                   >
                     <FormItem
                       label={label}
+                      name={name}
+                      rules={[{ required, message: `${label}不能为空` }]}
                       {...formItemLayout}
                       {...antdSetting}
                       {...props}
                     >
-                      {name
-                        ? form.getFieldDecorator(name, {
-                            rules: [{ required, message: `${label}不能为空` }],
-                            ...getFieldDecoratorOptions,
-                          })(
-                            createFormItemContent({
-                              element: _element,
-                              _type,
-                            })
-                          )
-                        : createFormItemContent({ element: _element, _type })}
+                      {createFormItemContent({ element: _element, _type })}
                     </FormItem>
                   </Col>
                 );
@@ -123,4 +115,4 @@ function CF({
   );
 }
 
-export default Form.create("MForm")(CF);
+export default CF;

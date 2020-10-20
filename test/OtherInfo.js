@@ -1,5 +1,5 @@
 import React from "react";
-import { DatePicker, Input, Select } from "antd";
+import { Button, DatePicker, Input, Select } from "antd";
 // import MForm, { useConfigForm } from "../lib";
 import MForm, { useConfigForm } from "../src";
 // import MForm, { useConfigForm } from "mconfigform";
@@ -19,7 +19,7 @@ const formLayout = {
   },
 };
 
-let count = 1;
+let count = 2;
 var num = 0;
 
 function OtherInfo(props) {
@@ -109,9 +109,7 @@ function OtherInfo(props) {
         id: 0,
         label: type,
         name: `${w}[]type`,
-        getFieldDecoratorOptions: {
-          initialValue: 2,
-        },
+        initialValue: 2,
         element: {
           type: React.forwardRef((props, ref) => (
             <Select {...props} ref={ref}></Select>
@@ -302,9 +300,7 @@ function OtherInfo(props) {
           element: {
             type: DatePicker,
           },
-          getFieldDecoratorOptions: {
-            $initialValue: moment(listData.legalPersonId),
-          },
+          $initialValue: moment(listData.legalPersonId),
         },
       ],
     },
@@ -333,11 +329,76 @@ function OtherInfo(props) {
       }),
     },
     cbf(),
+    cbf(1),
+    {
+      id: "a",
+      title: "a",
+      col: {
+        span: 8,
+      },
+      l: "",
+      components: [
+        {
+          id: 0,
+          label: "窝窝名称",
+          name: "wowoName",
+          element: {
+            type: "span",
+            children(props) {
+              return <em>em</em>;
+            },
+            in: "aaaw",
+            props: {
+              in: "w",
+              data_a: 123,
+              className: "spanm",
+            },
+          },
+        },
+        {
+          id: 1,
+          label: "窝窝证件号码",
+          name: "wowoId",
+          type: "span",
+          element: {
+            children() {
+              return "w";
+            },
+          },
+          required: false,
+        },
+        {
+          id: 2,
+          label: "窝窝证件有效日期",
+          name: "woIdExpiryDate",
+          element: {
+            type: DatePicker,
+          },
+          $initialValue: moment(listData.legalPersonId),
+        },
+      ],
+    },
+    {
+      id: "btn",
+      title: "btn",
+      col: {
+        span: 8,
+      },
+      components: [
+        {
+          id: 2,
+          name: "btn",
+          element: {
+            type: 'button',
+          },
+        },
+      ],
+    },
   ];
-  console.log("1", config[0].__m__);
   const [proxyConfig, inited] = useConfigForm(config, [f]);
+  console.log("1", inited.form);
   useEffect(() => {
-    console.log("inited", inited);
+    console.log("inited", inited.form);
   }, []);
   return (
     <div>
@@ -348,7 +409,15 @@ function OtherInfo(props) {
       >
         div
       </div>
-      <MForm {...{ config: proxyConfig, proxyConfig, inited, ...formLayout }} />
+      <MForm
+        {...{ config: proxyConfig, proxyConfig, inited, ...formLayout }}
+        onFinishFailed={(a) => {
+          console.log(a);
+        }}
+        onFinish={(a) => {
+          console.log(a);
+        }}
+      />
     </div>
   );
 }
