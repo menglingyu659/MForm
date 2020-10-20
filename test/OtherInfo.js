@@ -19,7 +19,7 @@ const formLayout = {
   },
 };
 
-let count = 1;
+let count = 2;
 var num = 0;
 
 function OtherInfo(props) {
@@ -183,7 +183,7 @@ function OtherInfo(props) {
       title: {
         label: ({ cfgProps: { ownIndex } }) => `弟弟答案${ownIndex + 1}_${num}`,
         isShowAdd({ cfgProps, cfgProps: { ownIndex } }) {
-          console.log(cfgProps, count === ownIndex + 1);
+          console.log(count, ownIndex, count === ownIndex + 1);
           return count === ownIndex + 1;
         },
         isShowMinus() {
@@ -361,6 +361,51 @@ function OtherInfo(props) {
       }),
     },
     cbf(),
+    cbf(1),
+    {
+      id: "w",
+      col: {
+        span: 8,
+      },
+      l: "",
+      components: [
+        {
+          id: 0,
+          label: "窝窝名称",
+          name: "wowoName",
+          getFieldDecoratorOptions: {
+            $initialValue: 1231,
+          },
+          element: {
+            in: "aaaw",
+            props: {
+              in: "w",
+              data_a: 123,
+              className: "spanm",
+            },
+          },
+        },
+        {
+          id: 1,
+          label: "窝窝证件号码",
+          name: "wowoId",
+          type: "span",
+          element: {},
+          required: false,
+        },
+        {
+          id: 2,
+          label: "窝窝证件有效日期",
+          name: "wowoIdExpiryDate",
+          element: {
+            type: DatePicker,
+          },
+          getFieldDecoratorOptions: {
+            $initialValue: moment(listData.legalPersonId),
+          },
+        },
+      ],
+    },
   ];
   const [proxyConfig, inited] = useConfigForm(config, [f]);
   useEffect(() => {
