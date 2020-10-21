@@ -1,4 +1,4 @@
-import React, { useMemo, useLayoutEffect } from "react";
+import React, { useLayoutEffect } from "react";
 import { Col, Form, Row } from "antd";
 import { createFormItemContent } from "./createFormItemContent";
 import { validatorKey } from "./utils";
@@ -22,7 +22,6 @@ function CF({
   useLayoutEffect(() => {
     setting.form = form;
   }, [setting, form]);
-  console.log(newProps);
   return (
     <Form {...newProps}>
       {initedConfig.map((p, configIndex) => {

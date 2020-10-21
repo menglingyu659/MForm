@@ -15,14 +15,13 @@ function MForm(props, ref) {
     ...newProps
   } = props;
   const [, forceUpdata] = useState(null);
+  const _forceUpdata = () => forceUpdata({});
   const [initedConfig, setting] = useConfigForm(config, depend, inited, {});
   const innerHooks = setting.getInnerHooks("mmmmmmmm_innerHooks");
   useImperativeHandle(ref, () => [initedConfig, setting]);
-  configDecorator(initedConfig);
+  configDecorator(initedConfig, _forceUpdata);
   useLayoutEffect(() => {
-    const unlisten = innerHooks.setRegister(() => {
-      forceUpdata({});
-    });
+    const unlisten = innerHooks.setRegister(_forceUpdata);
     return () => {
       unlisten();
     };
