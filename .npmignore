@@ -16,4 +16,3 @@ webpack.npm.config.js
 yarn-error.log
 libSrc/
 libNpm/
-webpack.libNpm.config.js
