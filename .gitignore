@@ -3,4 +3,3 @@ lib/
 dist/
 libSrc/
 libNpm/
-webpack.libNpm.config.js
