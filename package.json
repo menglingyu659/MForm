@@ -1,5 +1,5 @@
 {
-  "name": "mconfigform",
+  "name": "mconfigform-test",
   "version": "1.0.28",
   "description": "this is a form package",
   "main": "lib/index.js",
