@@ -1,9 +1,9 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Button, DatePicker, Input, Select } from "antd";
 // import { MForm } from "../libNpm";
-// import MForm, { useConfigForm } from "../src";
+import MForm, { useConfigForm } from "../src";
 // import MForm, { useConfigForm } from "mconfigform";
-import MForm, { useConfigForm } from "../lib";
+// import MForm, { useConfigForm } from "../lib";
 import moment from "moment";
 console.log(MForm);
 const formLayout = {
