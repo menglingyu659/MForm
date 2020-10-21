@@ -1,19 +1,34 @@
 const path = require("path");
-const HtmlWebpackPlugin = require("html-webpack-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 
 module.exports = {
-  mode: "development",
+  mode: "production",
   devtool: false,
   entry: {
-    index: ["@babel/polyfill", "./src/MConfigForm/index.js"],
+    index: ["@babel/polyfill", "./src/index.js"],
   },
   output: {
     path: path.resolve(__dirname, "lib"),
-    filename: "[name].js",
+    filename: "index.js",
+    libraryTarget: "umd", // 采用通用模块定义
+    library: "MForm", // 库名称
+    libraryExport: "default", // 兼容 ES6(ES2015) 的模块系统、CommonJS 和 AMD 模块规范
+    globalObject: "this", // 兼容node和浏览器运行，避免window is not undefined情况
   },
   externals: {
-    react: "react", //打包时候排除react
+    // 定义外部依赖，避免把react和react-dom打包进去
+    react: {
+      root: "React",
+      commonjs2: "react",
+      commonjs: "react",
+      amd: "react",
+    },
+    "react-dom": {
+      root: "ReactDOM",
+      commonjs2: "react-dom",
+      commonjs: "react-dom",
+      amd: "react-dom",
+    },
   },
   module: {
     rules: [
@@ -35,4 +50,10 @@ module.exports = {
     ],
   },
   plugins: [new CleanWebpackPlugin()],
+  optimization: {
+    splitChunks: {
+      chunks: "all",
+    },
+  },
+  devtool: "cheap-module-eval-source-map",
 };

@@ -1,13 +1,11 @@
-import React from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Button, DatePicker, Input, Select } from "antd";
-// import MForm, { useConfigForm } from "../lib";
-import MForm, { useConfigForm } from "../src";
+// import { MForm } from "../libNpm";
+// import MForm, { useConfigForm } from "../src";
 // import MForm, { useConfigForm } from "mconfigform";
-import { useEffect } from "react";
-import { useMemo } from "react";
+import MForm, { useConfigForm } from "../lib";
 import moment from "moment";
-import { useState } from "react";
-
+console.log(MForm);
 const formLayout = {
   labelCol: {
     xs: 24,
@@ -389,7 +387,7 @@ function OtherInfo(props) {
           id: 2,
           name: "btn",
           element: {
-            type: 'button',
+            type: "button",
           },
         },
       ],

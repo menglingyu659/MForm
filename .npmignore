@@ -14,3 +14,6 @@ webpack.npm.config.js
 .npmignore
 .vscode
 yarn-error.log
+libSrc/
+libNpm/
+webpack.libNpm.config.js

@@ -9,7 +9,10 @@
   "scripts": {
     "dev": "webpack-dev-server",
     "build": "webpack --config webpack.prod.config.js",
-    "lib": "babel src -d lib"
+    "npm": "webpack --config webpack.npm.config.js",
+    "libNpm": "npm run libSrc && webpack --config webpack.libNpm.config.js",
+    "lib": "babel src -d lib",
+    "libSrc": "babel src -d libSrc"
   },
   "repository": {
     "type": "git",
@@ -24,7 +27,9 @@
     "url": "https://github.com/menglingyu659/MForm/issues"
   },
   "homepage": "https://github.com/menglingyu659/MForm#readme",
-  "dependencies": {},
+  "dependencies": {
+    "antd": "^4.7.2"
+  },
   "devDependencies": {
     "@ant-design/icons": "^4.2.2",
     "@babel/cli": "^7.11.6",
@@ -35,7 +40,6 @@
     "@babel/preset-env": "^7.11.5",
     "@babel/preset-react": "^7.10.4",
     "@babel/runtime": "^7.11.2",
-    "antd": "^4.7.2",
     "babel-loader": "^8.1.0",
     "babel-plugin-import": "^1.13.0",
     "babel-runtime": "^6.26.0",
@@ -44,7 +48,7 @@
     "extract-text-webpack-plugin": "^3.0.2",
     "html-webpack-plugin": "^4.5.0",
     "less-loader": "^7.0.1",
-    "mconfigform": "^1.0.8",
+    "mconfigform": "1.0.26",
     "moment": "^2.29.1",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
