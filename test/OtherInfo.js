@@ -22,7 +22,7 @@ var num = 0;
 
 function OtherInfo(props) {
   const { listData = {} } = props;
-  const [f, force] = useState([]);
+  const [f, force] = useState(12313);
   function change2({ cfgIndex }, value, element) {
     if (value === 2 || value === 3) {
       proxyConfig[cfgIndex].components = pc();
@@ -45,7 +45,7 @@ function OtherInfo(props) {
       });
     }
   }
-
+  console.log(f);
   function mc(
     w = "Info1",
     { type = "十标志", name = "机构名称", id = "统一社会信用代码" } = {}
@@ -84,6 +84,7 @@ function OtherInfo(props) {
         id: 1,
         label: name,
         name: `${w}[]name`,
+        initialValue: 123,
       },
       {
         id: 2,
@@ -139,11 +140,13 @@ function OtherInfo(props) {
         id: 1,
         label: name,
         name: `${w}[]name`,
+        initialValue: 123,
       },
       {
         id: 2,
         label: id,
         name: `${w}[]id`,
+        initialValue: f,
       },
       {
         id: 3,
@@ -402,7 +405,7 @@ function OtherInfo(props) {
     <div>
       <div
         onClick={() => {
-          force({});
+          force(9999);
         }}
       >
         div
