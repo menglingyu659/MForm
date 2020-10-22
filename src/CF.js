@@ -3,7 +3,6 @@ import { Col, Form, Row } from "antd";
 import { createFormItemContent } from "./createFormItemContent";
 import { validatorKey } from "./utils";
 import Title from "./Title";
-import "./style/CF.css";
 
 const FormItem = Form.Item;
 
