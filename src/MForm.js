@@ -14,8 +14,8 @@ function MForm(props, ref) {
     col: { props: formColProps, ...formCol } = {},
     ...newProps
   } = props;
-  const [, forceUpdata] = useState(null);
-  const _forceUpdata = () => forceUpdata({});
+  const [, forceUpdate] = useState(null);
+  const _forceUpdata = () => forceUpdate({});
   const [initedConfig, setting] = useConfigForm(config, depend, inited, {});
   const innerHooks = setting.getInnerHooks("mmmmmmmm_innerHooks");
   useImperativeHandle(ref, () => [initedConfig, setting]);

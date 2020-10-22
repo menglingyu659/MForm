@@ -117,11 +117,11 @@ function cfgDecorator(cfg, par, key) {
   return cfg;
 }
 
-export function configDecorator(config = [], forceUpdata) {
+export function configDecorator(config = [], forceUpdate) {
   config.forEach((cfg, cfgIndex) => {
     const { divideIndex } = cfg;
     const ownIndex = divideIndex ? cfgIndex - divideIndex : undefined;
-    cfgDecorator(cfg, { cfgIndex, ownIndex, cfg, divideIndex, forceUpdata });
+    cfgDecorator(cfg, { cfgIndex, ownIndex, cfg, divideIndex, forceUpdate });
   });
   return config;
 }
