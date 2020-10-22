@@ -1,6 +1,6 @@
 {
   "name": "mconfigform-nc",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "this is a form package",
   "main": "lib/index.js",
   "directories": {
@@ -28,10 +28,10 @@
   },
   "homepage": "https://github.com/menglingyu659/MForm#readme",
   "dependencies": {
+    "@ant-design/icons": "^4.2.2",
     "antd": "^4.7.2"
   },
   "devDependencies": {
-    "@ant-design/icons": "^4.2.2",
     "@babel/cli": "^7.11.6",
     "@babel/core": "^7.11.6",
     "@babel/plugin-proposal-class-properties": "^7.10.4",
