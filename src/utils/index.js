@@ -115,16 +115,17 @@ export function dealData(willDealData) {
 }
 
 function removeing(propsIndexs, prop, status, willDealData) {
-  const index = propsIndexs[prop];
+  const pp = `active$_m_$${prop}`;
+  const index = propsIndexs[pp];
   delete willDealData[status][index];
-  delete propsIndexs[prop];
+  delete propsIndexs[pp];
 }
 
 export function removeOriginDealDataRunner(cfg, prop, willDealData) {
   if (!cfg.hasOwnProperty("__m__")) return cfg;
   const { propsIndexs } = cfg.__m__;
   if (propsIndexs.hasOwnProperty(`active$_m_$${prop}`))
-    removeing(propsIndexs, `active$_m_$${prop}`, "active", willDealData);
+    removeing(propsIndexs, prop, "active", willDealData);
   // else if (propsIndexs.hasOwnProperty(`bind$_m_$${prop}`))
   //   removeing(propsIndexs, `bind$_m_$${prop}`, "bind", willDealData);
   // else if (propsIndexs.hasOwnProperty(`other$_m_$${prop}`))

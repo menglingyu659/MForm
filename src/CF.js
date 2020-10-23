@@ -17,8 +17,8 @@ function CF({
   newProps,
   initedConfig,
   innerHooks,
-  form,
 }) {
+  const [form] = Form.useForm();
   useLayoutEffect(() => {
     setting.form = form;
   }, [setting, form]);
@@ -99,22 +99,14 @@ function CF({
                     {...{ ...formColProps, ...colProps, ...itemColProps }}
                   >
                     <FormItem
+                      name={name}
                       label={label}
+                      rules={[{ required, message: `${label}不能为空` }]}
                       {...formItemLayout}
                       {...antdSetting}
                       {...props}
                     >
-                      {name
-                        ? form.getFieldDecorator(name, {
-                            rules: [{ required, message: `${label}不能为空` }],
-                            ...getFieldDecoratorOptions,
-                          })(
-                            createFormItemContent({
-                              element: _element,
-                              _type,
-                            })
-                          )
-                        : createFormItemContent({ element: _element, _type })}
+                      {createFormItemContent({ element: _element, _type })}
                     </FormItem>
                   </Col>
                 );
@@ -127,4 +119,4 @@ function CF({
   );
 }
 
-export default Form.create("MForm")(CF);
+export default CF;

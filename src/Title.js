@@ -1,5 +1,6 @@
 import React from "react";
-import { Typography, Icon } from "antd";
+import { Typography } from "antd";
+import { PlusCircleOutlined, MinusCircleOutlined } from "@ant-design/icons";
 
 const { Text } = Typography;
 
@@ -43,8 +44,7 @@ function Title(_props) {
       {isShowAdd && (
         <span>
           &nbsp;&nbsp;
-          <Icon
-            type="plus-circle"
+          <PlusCircleOutlined
             style={{ cursor: "pointer" }}
             onClick={function (...args) {
               typeof handleAddClick === "function" &&
@@ -59,8 +59,7 @@ function Title(_props) {
       {isShowMinus && (
         <span>
           &nbsp;&nbsp;
-          <Icon
-            type="minus-circle-o"
+          <MinusCircleOutlined
             style={{ cursor: "pointer" }}
             onClick={function (...args) {
               typeof handleMinusClick === "function" &&
