@@ -18,8 +18,8 @@ function Title(_props) {
       isShowAdd,
       isShowMinus,
       render,
-      onAddClick,
-      onMinusClick,
+      handleAddClick,
+      handleMinusClick,
       props,
       ...titleProps
     } = {},
@@ -51,8 +51,8 @@ function Title(_props) {
           <PlusCircleOutlined
             style={{ cursor: "pointer" }}
             onClick={function (...args) {
-              typeof onAddClick === "function" &&
-                onAddClick.apply(this, [
+              typeof handleAddClick === "function" &&
+                handleAddClick.apply(this, [
                   {
                     add: addCallback,
                     components,
@@ -76,8 +76,8 @@ function Title(_props) {
           <MinusCircleOutlined
             style={{ cursor: "pointer" }}
             onClick={function (...args) {
-              typeof onMinusClick === "function" &&
-                onMinusClick.apply(this, [
+              typeof handleMinusClick === "function" &&
+                handleMinusClick.apply(this, [
                   {
                     minus: minusCallback,
                     components,

@@ -186,12 +186,12 @@ function OtherInfo(props) {
         isShowMinus() {
           return count !== 1;
         },
-        onAddClick({ add }) {
+        handleAddClick({ add }) {
           count++;
           const components = cbf(num + 1);
           add(components);
         },
-        onMinusClick({ minus }) {
+        handleMinusClick({ minus }) {
           count--;
           minus();
         },
