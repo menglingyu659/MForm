@@ -23,7 +23,7 @@ function CF({
     setting.form = form;
   }, [setting, form]);
   return (
-    <Form {...newProps}>
+    <Form {...newProps} form={form}>
       {initedConfig.map((p, configIndex) => {
         if (Object.prototype.toString.call(p) !== "[object Object]")
           return null;
