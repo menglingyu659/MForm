@@ -266,60 +266,6 @@ export function cfgIndexReset(config = []) {
   });
 }
 
-class BinaryTree {
-  constructor(coll) {
-    this.stack = [];
-    this.root = null;
-    this.createBinaryTree(coll);
-  }
-
-  static BinaryTree(value) {
-    this.value = value;
-    this.left = this.right = null;
-  }
-
-  insertNode(value) {
-    const node = new BinaryTree.BinaryTree(value);
-    this.stack.push(node);
-    if (this.root === null) {
-      this.root = node;
-    } else {
-      this.inset(node);
-    }
-  }
-
-  inset(node) {
-    if (this.stack[0].left === null) {
-      this.stack[0].left = node;
-    } else {
-      this.stack.shift().right = node;
-    }
-  }
-
-  createBinaryTree(coll) {
-    for (const prop in coll) {
-      this.insertNode(coll[prop]);
-    }
-    return this;
-  }
-}
-
-export function compare(origin, target) {
-  let result;
-  if (Object.is(origin, target)) result = true;
-  else if (
-    !Object.is(
-      Object.prototype.toString.call(origin),
-      Object.prototype.toString.call(target)
-    )
-  ) {
-    result = [{ type: "change", origin, target }];
-  } else {
-    result = [];
-  }
-  return result;
-}
-
 function resetIndex(config) {
   const { $cfg } = config.__m__;
   if ($cfg === "root") {

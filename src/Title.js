@@ -6,8 +6,11 @@ const { Text } = Typography;
 
 function Title(_props) {
   const {
-    ownIndex,
+    cfg,
+    divideIndex,
     configIndex,
+    components,
+    forceUpdate,
     title,
     innerHooks: { add, minus } = {},
     title: {
@@ -23,6 +26,7 @@ function Title(_props) {
   } = _props;
   const addCallback = add(configIndex);
   const minusCallback = minus(configIndex);
+  const ownIndex = divideIndex ? configIndex - divideIndex : null;
   return (
     <span className="m-title">
       {title ? (
@@ -49,7 +53,17 @@ function Title(_props) {
             onClick={function (...args) {
               typeof handleAddClick === "function" &&
                 handleAddClick.apply(this, [
-                  { add: addCallback, configIndex, ownIndex },
+                  {
+                    add: addCallback,
+                    components,
+                    cfgProps: {
+                      cfg,
+                      cfgIndex: configIndex,
+                      ownIndex,
+                      divideIndex,
+                      forceUpdate,
+                    },
+                  },
                   ...args,
                 ]);
             }}
@@ -64,7 +78,17 @@ function Title(_props) {
             onClick={function (...args) {
               typeof handleMinusClick === "function" &&
                 handleMinusClick.apply(this, [
-                  { minus: minusCallback, configIndex, ownIndex },
+                  {
+                    minus: minusCallback,
+                    components,
+                    cfgProps: {
+                      cfg,
+                      cfgIndex: configIndex,
+                      ownIndex,
+                      divideIndex,
+                      forceUpdate,
+                    },
+                  },
                   ...args,
                 ]);
             }}
