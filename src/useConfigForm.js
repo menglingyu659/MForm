@@ -4,11 +4,9 @@ import {
   polyfillProxy,
   cfgControl,
   cfgDecorator,
-  cfgIndexReset,
   cfgDeal,
   removeOriginDealData,
   removeOriginDealDataRunner,
-  dealOriginProps,
   hasProxy,
   getDealData,
   diff,
@@ -31,7 +29,6 @@ export class CreateConfig {
     this.config = config;
     this.register = [];
     this.willDealData = {};
-    // this.keying(config);
     if (config) {
       this.createObjectProto = this.overwriteObjectMethod();
       this.createArrayProto = this.overwriteArrayMethod();

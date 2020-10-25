@@ -52,6 +52,7 @@ function MForm(props, ref) {
         newProps,
         initedConfig,
         innerHooks,
+        forceUpdate: _forceUpdate,
       }}
     ></CF>
   );

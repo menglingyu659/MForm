@@ -17,6 +17,7 @@ function CF({
   newProps,
   initedConfig,
   innerHooks,
+  forceUpdate,
 }) {
   const [form] = Form.useForm();
   useLayoutEffect(() => {
@@ -41,7 +42,6 @@ function CF({
           col: { props: colProps, ...col } = {},
           ...boxSetting
         } = p;
-        const ownIndex = divideIndex ? configIndex - divideIndex : null;
         return (
           <div
             className="m-box"
@@ -49,7 +49,17 @@ function CF({
             {...boxSetting}
             {...boxProps}
           >
-            <Title {...{ title, configIndex, ownIndex, innerHooks }} />
+            <Title
+              {...{
+                title,
+                configIndex,
+                innerHooks,
+                divideIndex,
+                components,
+                cfg: p,
+                forceUpdate,
+              }}
+            />
             <Row
               {...{ ...formRow, ...row }}
               {...{ ...formRowProps, ...rowProps }}
