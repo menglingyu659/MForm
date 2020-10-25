@@ -13,3 +13,4 @@ webpack.npm.config.js
 .gitignore
 .npmignore
 .vscode
+yarn-error.log
