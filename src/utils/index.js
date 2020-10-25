@@ -134,9 +134,10 @@ export function removeOriginDealDataRunner(cfg, prop, willDealData) {
 }
 
 export function removeOriginDealData(cfg, willDealData) {
+  if (!cfg.hasOwnProperty("__m__")) return cfg;
   for (const prop in cfg) {
     removeOriginDealDataRunner(cfg, prop, willDealData);
-    if (cfgControl(cfg, prop, cfg[prop])) {
+    if (cfgControl(prop, cfg[prop])) {
       removeOriginDealData(cfg[prop], willDealData);
     }
   }
@@ -181,24 +182,8 @@ export function cfgDeal(cfg, prop, value, props, willDealData) {
   return cfg;
 }
 
-function toggle(cfg, newProps) {
-  const {
-    originProps: { cmptProps, cfgProps },
-  } = cfg.__m__;
-  if (cmptProps) {
-    cmptProps.cmptIndex = newProps.cmptProps.cmptIndex;
-  } else {
-    cfgProps.cfgIndex = newProps.cfgProps.cfgIndex;
-    cfgProps.ownIndex = newProps.cfgProps.ownIndex;
-    cfgProps.divideIndex = newProps.cfgProps.divideIndex;
-  }
-  return cfg;
-}
-
 export function cfgDecorator(cfg, key, originProps, willDealData) {
   if (typeof cfg !== "object" || cfg === null) return cfg;
-  if (JSON.stringify(cfg.__m__.originProps) !== "{}")
-    return toggle(cfg, originProps);
   cfg.__m__.originProps = originProps;
   for (const prop in cfg) {
     const value = cfg[prop];
@@ -209,7 +194,7 @@ export function cfgDecorator(cfg, key, originProps, willDealData) {
       };
     }
     cfgDeal(cfg, prop, value, originProps, willDealData);
-    if (cfgControl(cfg, prop, value)) {
+    if (cfgControl(prop, value)) {
       //递归对象
       cfgDecorator(value, prop, originProps, willDealData);
     }
@@ -217,7 +202,7 @@ export function cfgDecorator(cfg, key, originProps, willDealData) {
   return cfg;
 }
 
-export function configDecorator(config = [], forceUpdata) {
+export function configDecorator(config = [], forceUpdate) {
   const willDealData = { active: [], bind: [], other: [] };
   config.forEach((cfg, cfgIndex) => {
     if (Object.prototype.toString.call(cfg) === "[object Object]") {
@@ -230,19 +215,19 @@ export function configDecorator(config = [], forceUpdata) {
           ownIndex,
           divideIndex,
         },
-        forceUpdata,
+        forceUpdate,
         components,
       };
       cfgDecorator(cfg, cfgIndex, originProps, willDealData);
     }
   });
   config.__m__.originProps = {
-    forceUpdata,
+    forceUpdate,
   };
   return willDealData;
 }
 
-export function cfgControl(cfg, prop, value) {
+export function cfgControl(prop, value) {
   return (
     typeof value === "object" &&
     value !== null &&
@@ -335,4 +320,60 @@ export function compare(origin, target) {
   return result;
 }
 
-export function diff(origin, target) {}
+function resetIndex(config) {
+  const { $cfg } = config.__m__;
+  if ($cfg === "root") {
+    config.forEach((cfg, cfgIndex) => {
+      const {
+        divideIndex,
+        components,
+        __m__: { originProps },
+      } = cfg;
+      const ownIndex = divideIndex ? cfgIndex - divideIndex : undefined;
+      originProps.cfgProps = {
+        cfg,
+        cfgIndex,
+        ownIndex,
+        divideIndex,
+      };
+      originProps.components = components;
+    });
+  } else if ($cfg === "components") {
+    config.forEach((cfg, cmptIndex) => {
+      cfg.__m__.originProps.cmptProps = {
+        cmpt: cfg,
+        cmptIndex: Number(cmptIndex),
+      };
+    });
+  }
+}
+
+export function diff(origin, target, willDealData) {
+  const { $cfg, originProps: _originProps } = target.__m__;
+  const flag = ["root", "components"].includes($cfg);
+  const originProps = flag ? { ..._originProps } : _originProps;
+  origin.forEach((item, index) => {
+    if (!target.includes(item)) {
+      //删除
+      if (cfgControl(index, item)) {
+        removeOriginDealData(item, willDealData);
+      } else {
+        removeOriginDealDataRunner(target, index, willDealData);
+      }
+    }
+  });
+  target.forEach((item, index) => {
+    if (!origin.includes(item)) {
+      //添加
+      if (cfgControl(index, item)) {
+        cfgDecorator(item, index, originProps, willDealData);
+      } else {
+        cfgDeal(target, index, item, originProps, willDealData);
+      }
+    }
+  });
+
+  if (flag) {
+    resetIndex(target);
+  }
+}

@@ -19,8 +19,8 @@ function MForm(props, ref) {
     col: { props: formColProps, ...formCol } = {},
     ...newProps
   } = props;
-  const [, forceUpdata] = useState(null);
-  const _forceUpdata = () => forceUpdata({});
+  const [, forceUpdate] = useState(null);
+  const _forceUpdate = () => forceUpdate({});
   const [initedConfig, setting] = useConfigForm(config, depend, inited, {});
   const innerHooks = setting.getInnerHooks("mmmmmmmm_innerHooks");
   useImperativeHandle(ref, () => [initedConfig, setting], [
@@ -28,13 +28,13 @@ function MForm(props, ref) {
     setting,
   ]);
   const willDealData = useMemo(() => {
-    const willDealData = configDecorator(initedConfig, _forceUpdata);
+    const willDealData = configDecorator(initedConfig, _forceUpdate);
     innerHooks.setWillDealData(willDealData);
     return willDealData;
   }, [initedConfig]);
   dealData(willDealData);
   useLayoutEffect(() => {
-    const unlisten = innerHooks.setRegister(_forceUpdata);
+    const unlisten = innerHooks.setRegister(_forceUpdate);
     return () => {
       unlisten();
     };

@@ -10,6 +10,8 @@ import {
   removeOriginDealDataRunner,
   dealOriginProps,
   hasProxy,
+  getDealData,
+  diff,
 } from "./utils";
 
 const arrayProto = Array.prototype;
@@ -57,18 +59,21 @@ export class CreateConfig {
 
   polyfillProxyCb = (value, prop, cfg) => {
     if (value.mark === "mmm_init") return value.value;
+    if (value.hasOwnProperty("__m__")) return value;
     const flag = cfg.hasOwnProperty(prop);
     const oValue = cfg[prop];
     let originProps =
       flag && oValue.__m__ ? oValue.__m__.originProps : cfg.__m__.originProps;
-    if (cfgControl(cfg, prop, value)) {
-      if (flag) removeOriginDealData(oValue, this.willDealData);
-      value = value.hasOwnProperty("__m__") ? value : this.pxying(value);
-      originProps = dealOriginProps(originProps, cfg, value, prop);
+    if (cfgControl(prop, oValue) && flag) {
+      removeOriginDealData(oValue, this.willDealData);
+    } else if (flag) {
+      removeOriginDealDataRunner(cfg, prop, this.willDealData);
+    }
+    value = this.pxying(value, prop);
+    if (cfgControl(prop, value)) {
       cfgDecorator(value, prop, originProps, this.willDealData);
     } else {
       cfgDeal(cfg, prop, value, originProps, this.willDealData);
-      if (flag) removeOriginDealDataRunner(cfg, prop, this.willDealData);
     }
     this.forceUpdate();
     return value;
@@ -117,7 +122,7 @@ export class CreateConfig {
     methodsToPatch.forEach((method) => {
       const that = this;
       createMark(createArrayProto, method, function (...args) {
-        const flag = ["pop", "splice"].includes(method);
+        const originArray = [...this];
         let insertData = [];
         switch (method) {
           case "push":
@@ -128,66 +133,28 @@ export class CreateConfig {
             insertData = args.splice(2);
             break;
         }
-        const len = this.length;
-        const _args = hasProxy
-          ? insertData
-          : insertData.map((item) => {
-              const proxyValue = that.pxying(item);
-              return proxyValue;
-            });
-
+        const _args = insertData.map((item) => {
+          const proxyValue = that.pxying(item);
+          return getDealData(proxyValue);
+        });
         const methodReturn = arrayProto[method].apply(this, [
           ...args,
           ..._args,
         ]);
-        if (flag && typeof methodReturn === "object" && methodReturn !== null) {
-          removeOriginDealData(methodReturn, that.willDealData);
-        }
-        if (!hasProxy) {
-          // 兼容IE
-          let { originProps } = this.__m__;
-          this.slice(len).forEach((item, index) => {
-            originProps = dealOriginProps(originProps, this, item, index + len);
-            cfgDecorator(item, index + len, originProps, that.willDealData);
-          });
-          if (insertData.length) polyfillProxy(this, that.polyfillProxyCb);
-        }
-        if (!hasProxy || flag) that.forceUpdate();
+        const targetArray = this;
+        diff(originArray, targetArray, that.willDealData);
+        if (!hasProxy && insertData.length)
+          polyfillProxy(this, that.polyfillProxyCb);
+        that.forceUpdate();
         return methodReturn;
       });
     });
     return createArrayProto;
   };
 
-  // pxying = (configIndex, ownIndex) => {
-  //   const innerPxying = (config) => {
-  //     // if (typeof config === "function" && /^(on|handle).*/.test(config.name))
-  //     //   return this.overwriteMethods(config, configIndex, ownIndex);
-  //     if (typeof config !== "object") return config;
-  //     if (!config.__m__) {
-  //       if (Array.isArray(config))
-  //         Object.setPrototypeOf(config, this.createArrayProto);
-  //       if (Object.prototype.toString.call(config) === "[object Object]") {
-  //         Object.setPrototypeOf(config, this.createObjectProto);
-  //       }
-  //       createMark(config, "__m__", {
-  //         // configIndex,
-  //         // ownIndex,
-  //         $cfg: "cid",
-  //       });
-  //     }
-  //     for (const cfg in config) {
-  //       const every = config[cfg];
-  //       config[cfg] = innerPxying(every);
-  //     }
-  //     return polyfillProxy(config, () => {
-  //       this.forceUpdate();
-  //     });
-  //   };
-  //   return innerPxying;
-  // };
   pxying = (config, key) => {
-    if (typeof config !== "object" || config === null) return config;
+    if (!cfgControl(key, config) || config.hasOwnProperty("__m__"))
+      return config;
     if (!config.__m__) {
       if (Array.isArray(config))
         Object.setPrototypeOf(config, this.createArrayProto);
@@ -201,10 +168,8 @@ export class CreateConfig {
       });
     }
     for (const cfg in config) {
-      if (cfg !== "type" && !/^\$.*/.test(cfg)) {
-        const every = config[cfg];
-        config[cfg] = this.pxying(every, cfg);
-      }
+      const every = config[cfg];
+      config[cfg] = this.pxying(every, cfg);
     }
     return polyfillProxy(config, this.polyfillProxyCb);
   };

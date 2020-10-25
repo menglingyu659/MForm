@@ -25,6 +25,7 @@ var num = 0;
 function OtherInfo(props) {
   const { listData = {} } = props;
   const [f, force] = useState([]);
+  console.log(f);
   function change2({ cfgProps: { cfgIndex } }, value, element) {
     if (value === 2 || value === 3) {
       proxyConfig[cfgIndex].components = pc();
@@ -37,7 +38,6 @@ function OtherInfo(props) {
     const {
       cfgProps: { cfgIndex },
     } = m;
-    console.log(m);
     if (value === 2 || value === 3) {
       proxyConfig[cfgIndex].components = pc("info2", {
         type: "kk",
@@ -90,9 +90,7 @@ function OtherInfo(props) {
         label: name,
         name: `${w}[]name`,
         element: {
-          onClick(a) {
-            console.log(a);
-          },
+          onClick(a) {},
         },
       },
       {
@@ -183,7 +181,6 @@ function OtherInfo(props) {
       title: {
         label: ({ cfgProps: { ownIndex } }) => `弟弟答案${ownIndex + 1}_${num}`,
         isShowAdd({ cfgProps, cfgProps: { ownIndex } }) {
-          console.log(count, ownIndex, count === ownIndex + 1);
           return count === ownIndex + 1;
         },
         isShowMinus() {
@@ -233,9 +230,7 @@ function OtherInfo(props) {
           label: "span",
           type: function () {
             useEffect(() => {
-              return () => {
-                console.log("un");
-              };
+              return () => {};
             }, []);
             return (
               <div>
@@ -260,9 +255,7 @@ function OtherInfo(props) {
           id: 0,
           label: "窝窝名称",
           name: "wowoName",
-          getFieldDecoratorOptions: {
-            $initialValue: 1231,
-          },
+          initialValue: 1231,
           element: {
             in: "aaaw",
             props: {
@@ -275,11 +268,6 @@ function OtherInfo(props) {
                 //   "$initialValue",
                 //   moment("1234-10-08")
                 // );
-                p.components[2].getFieldDecoratorOptions.$initialValue = moment(
-                  "1234-10-08"
-                );
-
-                p.cmptProps.cmpt.getFieldDecoratorOptions.initialValue = "9999";
                 p.cfgProps.cfg.$set("title", {
                   label: (x) => {
                     // console.log(x);
@@ -372,10 +360,8 @@ function OtherInfo(props) {
         {
           id: 0,
           label: "窝窝名称",
-          name: "wowoName",
-          getFieldDecoratorOptions: {
-            $initialValue: 1231,
-          },
+          name: "wowoName1",
+          $initialValue: 1231,
           element: {
             in: "aaaw",
             props: {
@@ -388,7 +374,7 @@ function OtherInfo(props) {
         {
           id: 1,
           label: "窝窝证件号码",
-          name: "wowoId",
+          name: "wowoId1",
           type: "span",
           element: {},
           required: false,
@@ -396,13 +382,16 @@ function OtherInfo(props) {
         {
           id: 2,
           label: "窝窝证件有效日期",
-          name: "wowoIdExpiryDate",
+          onClick(m) {
+            console.log(m);
+            console.log(m.cmptProps.cmpt);
+            m.cmptProps.cmpt.$initialValue = moment("1234-09-10");
+          },
+          name: "wowoIdExpiryDate1",
           element: {
             type: DatePicker,
           },
-          getFieldDecoratorOptions: {
-            $initialValue: moment(listData.legalPersonId),
-          },
+          $initialValue: moment(listData.legalPersonId),
         },
       ],
     },
@@ -416,6 +405,7 @@ function OtherInfo(props) {
     <div>
       <div
         onClick={() => {
+          count = 2;
           force({});
         }}
       >
