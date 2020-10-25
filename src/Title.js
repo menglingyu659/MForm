@@ -59,7 +59,7 @@ function Title(_props) {
                     forceUpdate,
                     cfgProps: {
                       cfg,
-                      cfgIndex,
+                      cfgIndex: configIndex,
                       ownIndex,
                       divideIndex,
                     },
@@ -84,7 +84,7 @@ function Title(_props) {
                     forceUpdate,
                     cfgProps: {
                       cfg,
-                      cfgIndex,
+                      cfgIndex: configIndex,
                       ownIndex,
                       divideIndex,
                     },
