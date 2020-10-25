@@ -56,12 +56,12 @@ function Title(_props) {
                   {
                     add: addCallback,
                     components,
+                    forceUpdate,
                     cfgProps: {
                       cfg,
                       cfgIndex: configIndex,
                       ownIndex,
                       divideIndex,
-                      forceUpdate,
                     },
                   },
                   ...args,
@@ -81,12 +81,12 @@ function Title(_props) {
                   {
                     minus: minusCallback,
                     components,
+                    forceUpdate,
                     cfgProps: {
                       cfg,
                       cfgIndex: configIndex,
                       ownIndex,
                       divideIndex,
-                      forceUpdate,
                     },
                   },
                   ...args,
