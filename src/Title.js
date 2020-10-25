@@ -51,8 +51,8 @@ function Title(_props) {
           <PlusCircleOutlined
             style={{ cursor: "pointer" }}
             onClick={function (...args) {
-              typeof handleAddClick === "function" &&
-                handleAddClick.apply(this, [
+              typeof onAddClick === "function" &&
+                onAddClick.apply(this, [
                   {
                     add: addCallback,
                     components,
@@ -76,8 +76,8 @@ function Title(_props) {
           <MinusCircleOutlined
             style={{ cursor: "pointer" }}
             onClick={function (...args) {
-              typeof handleMinusClick === "function" &&
-                handleMinusClick.apply(this, [
+              typeof onMinusClick === "function" &&
+                onMinusClick.apply(this, [
                   {
                     minus: minusCallback,
                     components,
