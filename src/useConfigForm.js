@@ -29,7 +29,6 @@ export class CreateConfig {
     this.config = config;
     this.register = [];
     this.willDealData = {};
-    // this.keying(config);
     if (config) {
       this.createObjectProto = this.overwriteObjectMethod();
       this.createArrayProto = this.overwriteArrayMethod();
@@ -187,8 +186,8 @@ export class CreateConfig {
     return polyfillProxy(config, this.polyfillProxyCb);
   };
 
-  add = (index) => (component) => {
-    this.proxyConfig.splice(index + 1, 0, component);
+  add = (index) => (...component) => {
+    this.proxyConfig.splice(index + 1, 0, ...component);
   };
   minus = (index) => () => {
     this.proxyConfig.splice(index, 1);

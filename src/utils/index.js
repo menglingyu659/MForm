@@ -288,7 +288,7 @@ function resetIndex(config) {
     config.forEach((cfg, cmptIndex) => {
       cfg.__m__.originProps.cmptProps = {
         cmpt: cfg,
-        cmptIndex: Number(cmptIndex),
+        cmptIndex,
       };
     });
   }
@@ -297,7 +297,6 @@ function resetIndex(config) {
 export function diff(origin, target, willDealData) {
   const { $cfg, originProps: _originProps } = target.__m__;
   const flag = ["root", "components"].includes($cfg);
-  const originProps = flag ? { ..._originProps } : _originProps;
   origin.forEach((item, index) => {
     if (!target.includes(item)) {
       //删除
@@ -311,6 +310,7 @@ export function diff(origin, target, willDealData) {
   target.forEach((item, index) => {
     if (!origin.includes(item)) {
       //添加
+      const originProps = flag ? { ..._originProps } : _originProps;
       if (cfgControl(index, item)) {
         cfgDecorator(item, index, originProps, willDealData);
       } else {
@@ -318,7 +318,6 @@ export function diff(origin, target, willDealData) {
       }
     }
   });
-
   if (flag) {
     resetIndex(target);
   }

@@ -187,19 +187,19 @@ function OtherInfo(props) {
           return count !== 1;
         },
         handleAddClick({ add }) {
-          count++;
-          const components = cbf(num + 1);
-          add(components);
+          // count++;
+          // const components = cbf(num + 1);
+          // add(components);
+          count += 2;
+          const components = [cbf(num + 1), cbf(num + 2)];
+          add(...components);
         },
         handleMinusClick({ minus }) {
           count--;
           minus();
         },
         onClick(p) {
-          console.log(p.cfgProps.cfg.title.onClick);
-          p.cfgProps.cfg.title.onClick = (a) => {
-            console.log("dididi", a);
-          };
+          console.log(p);
 
           // proxyConfig[cfgIndex].title.label = "cfgIndex";
           // console.log(arg, "arg");
