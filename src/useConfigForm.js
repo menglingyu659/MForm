@@ -186,8 +186,8 @@ export class CreateConfig {
     return polyfillProxy(config, this.polyfillProxyCb);
   };
 
-  add = (index) => (component) => {
-    this.proxyConfig.splice(index + 1, 0, component);
+  add = (index) => (...component) => {
+    this.proxyConfig.splice(index + 1, 0, ...component);
   };
   minus = (index) => () => {
     this.proxyConfig.splice(index, 1);
